@@ -27,7 +27,7 @@ import TicTacToeGame from './components/TicTacToeGame';
 
 // Preset avatars for beautiful registration
 const PRESET_AVATARS = [
-  { name: 'XOX Premium', url: '/xox_icon.jpg' },
+  { name: 'XOX Premium', url: '/xox_icon.png' },
   { name: 'Oscar', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Oscar' },
   { name: 'Charlie', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Charlie' },
   { name: 'Buster', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Buster' },
@@ -242,7 +242,7 @@ export default function App() {
     setAuthSuccessMsg(null);
     setAuthLoading(true);
 
-    const presetUrl = PRESET_AVATARS[avatarSeedIndex]?.url || '/xox_icon.jpg';
+    const presetUrl = PRESET_AVATARS[avatarSeedIndex]?.url || '/xox_icon.png';
     const avatarToSave = avatarInput.trim() || presetUrl;
 
     try {
@@ -430,7 +430,7 @@ export default function App() {
           <div className="max-w-6xl mx-auto px-4 flex justify-between items-center">
             <div className="flex items-center gap-2.5">
               <img 
-                src="/xox_icon.jpg" 
+                src="/xox_icon.png" 
                 alt="XOX Arena Logo" 
                 className="w-8 h-8 rounded-lg object-cover shadow-sm border border-slate-200/50"
                 referrerPolicy="no-referrer"
@@ -480,7 +480,7 @@ export default function App() {
           <div className="max-w-6xl mx-auto px-4 flex items-center justify-between gap-2">
             <div className="hidden md:flex items-center gap-2.5 cursor-pointer shrink-0" onClick={() => setActivePageView('lobby')}>
               <img 
-                src="/xox_icon.jpg" 
+                src="/xox_icon.png" 
                 alt="XOX Arena Logo" 
                 className="w-9 h-9 rounded-xl object-cover shadow-md border border-slate-200/50"
                 referrerPolicy="no-referrer"
@@ -803,7 +803,7 @@ export default function App() {
         {/* Banner Logo */}
         <div className="text-center space-y-3">
           <img 
-            src="/xox_icon.jpg" 
+            src="/xox_icon.png" 
             alt="XOX Arena Logo" 
             className="w-16 h-16 rounded-2.5xl object-cover shadow-lg shadow-indigo-500/10 border border-slate-100 mx-auto"
             referrerPolicy="no-referrer"
