@@ -873,9 +873,11 @@ export default function App() {
                         setAvatarSeedIndex(idx);
                         setAvatarInput('');
                       }}
+                      
                       className={`p-1.5 rounded-xl border-2 shrink-0 transition-transform hover:scale-105 cursor-pointer bg-slate-50 ${
-                        isSelected ? 'border-indigo-600 scale-105 shadow-sm ring-2 ring-indigo-500/10' : 'border-slate-100'
-                      }`}
+  isSelected ? 'border-green-600 scale-105 shadow-sm ring-2 ring-green-500/10' : 'border-slate-100'
+}`}
+                      
                       title={avatar.name}
                     >
                       <img 
