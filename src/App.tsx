@@ -803,7 +803,7 @@ export default function App() {
         {/* Banner Logo */}
         <div className="text-center space-y-3">
           <img 
-  src="./assets/images/xox_icon.png"  // ← Burayı değiştir
+  src="/xox_icon.png"  // ← Burayı değiştir
   alt="XOX Arena Logo" 
   className="w-16 h-16 rounded-2.5xl object-cover shadow-lg shadow-indigo-500/10 border border-slate-100 mx-auto"
   referrerPolicy="no-referrer"
