@@ -1,0 +1,8 @@
+{
+  "name": "XOX Oyunu",
+  "description": "Socket.IO ve MongoDB destekli, Elo sistemli ve sohbetli çevrimiçi XOX (Tic Tac Toe) oyunu.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
