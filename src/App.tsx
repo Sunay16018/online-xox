@@ -27,7 +27,7 @@ import TicTacToeGame from './components/TicTacToeGame';
 
 // Preset avatars for beautiful registration
 const PRESET_AVATARS = [
-  { name: 'XOX Premium', url: '/xox_icon.png' },
+  { name: 'XOX Premium', url: '/xox_pro.png' },
   { name: 'Oscar', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Oscar' },
   { name: 'Charlie', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Charlie' },
   { name: 'Buster', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Buster' },
