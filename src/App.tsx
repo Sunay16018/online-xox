@@ -803,11 +803,11 @@ export default function App() {
         {/* Banner Logo */}
         <div className="text-center space-y-3">
           <img 
-            src="/xox_icon.png" 
-            alt="XOX Arena Logo" 
-            className="w-16 h-16 rounded-2.5xl object-cover shadow-lg shadow-indigo-500/10 border border-slate-100 mx-auto"
-            referrerPolicy="no-referrer"
-          />
+  src="/xox_pro.png"  // ← Burayı değiştir
+  alt="XOX Arena Logo" 
+  className="w-16 h-16 rounded-2.5xl object-cover shadow-lg shadow-indigo-500/10 border border-slate-100 mx-auto"
+  referrerPolicy="no-referrer"
+/>
           <div>
             <h1 className="font-extrabold text-2xl text-slate-800 tracking-tight leading-none block">XOX ARENA</h1>
             <span className="text-[10px] text-slate-400 font-bold tracking-widest uppercase block mt-1.5">Multiplayer XOX</span>
