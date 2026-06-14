@@ -130,6 +130,20 @@ app.get('/xox_pro.png', (req, res) => {
   }
 });
 
+app.get('/xox_icon.png', (req, res) => {
+  // Try new PNG first, fall back to old JPG
+  const pngPath = path.join(process.cwd(), 'assets/images/xox_icon.png');
+  const jpgPath = path.join(process.cwd(), 'assets/images/xox_icon_clean_round_1781433620627.jpg');
+  const fs = require('fs');
+  if (fs.existsSync(pngPath)) {
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.sendFile(pngPath);
+  } else {
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.sendFile(jpgPath);
+  }
+});
+
 // System Status Endpoint
 app.get('/api/status', (req, res) => {
   res.json({
