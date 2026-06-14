@@ -79,19 +79,19 @@ app.get('/manifest.json', (req, res) => {
     screenshots: [],
     icons: [
       {
-        src: "/xox_icon.png",
+        src: "/xox_pro.png",
         sizes: "192x192",
         type: "image/png",
         purpose: "any"
       },
       {
-        src: "/xox_icon.png",
+        src: "/xox_pro.png",
         sizes: "512x512",
         type: "image/png",
         purpose: "any"
       },
       {
-        src: "/xox_icon.png",
+        src: "/xox_pro.png",
         sizes: "512x512",
         type: "image/png",
         purpose: "maskable"
@@ -103,14 +103,14 @@ app.get('/manifest.json', (req, res) => {
         short_name: "Eşleş",
         description: "Hemen rakip bul ve oyna",
         url: "/?action=matchmaking",
-        icons: [{ src: "/xox_icon.png", sizes: "96x96" }]
+        icons: [{ src: "/xox_pro.png", sizes: "96x96" }]
       },
       {
         name: "Liderlik Tablosu",
         short_name: "Sıralama",
         description: "En iyi oyuncuları gör",
         url: "/?page=leaderboard",
-        icons: [{ src: "/xox_icon.png", sizes: "96x96" }]
+        icons: [{ src: "/xox_pro.png", sizes: "96x96" }]
       }
     ]
   });
