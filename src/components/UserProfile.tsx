@@ -9,7 +9,7 @@ interface UserProfileProps {
 }
 
 const AVATAR_PRESETS = [
-  { name: 'XOX Premium', url: '/xox_icon.jpg' },
+  { name: 'XOX Premium', url: '/xox_icon.png' },
   { name: 'Leo', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Leo' },
   { name: 'Mia', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Mia' },
   { name: 'Jack', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Jack' },
