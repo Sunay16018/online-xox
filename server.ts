@@ -12,9 +12,12 @@ dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
-const PORT = 3000;
+const PORT = parseInt(process.env.PORT || '3000', 10);
 
 app.use(express.json());
+
+// Serve public folder (sw.js, etc.)
+app.use(express.static(path.join(process.cwd(), 'public')));
 
 const JWT_SECRET = process.env.JWT_SECRET || 'xox-super-secret-key-9988';
 
@@ -61,27 +64,70 @@ function authenticateToken(req: AuthRequest, res: express.Response, next: expres
 // PWA Manifest & App Icon
 app.get('/manifest.json', (req, res) => {
   res.json({
-    name: "XOX Arena Online Multiplayer",
+    name: "XOX Arena - Online Multiplayer",
     short_name: "XOX Arena",
-    description: "Socket.IO ve MongoDB destekli, Elo sistemli ve sohbetli çevrimiçi XOX (Tic Tac Toe) oyunu.",
+    description: "Gerçek zamanlı çevrimiçi XOX oyunu. ELO puanlama, lobi sohbeti ve özel oda desteği.",
     start_url: "/",
+    scope: "/",
     display: "standalone",
+    display_override: ["window-controls-overlay", "standalone", "browser"],
     background_color: "#0f172a",
     theme_color: "#4f46e5",
     orientation: "portrait-primary",
+    lang: "tr",
+    categories: ["games", "entertainment"],
+    screenshots: [],
     icons: [
       {
-        src: "/xox_icon.jpg",
+        src: "/xox_icon.png",
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "any"
+      },
+      {
+        src: "/xox_icon.png",
         sizes: "512x512",
-        type: "image/jpeg",
-        purpose: "any maskable"
+        type: "image/png",
+        purpose: "any"
+      },
+      {
+        src: "/xox_icon.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable"
+      }
+    ],
+    shortcuts: [
+      {
+        name: "Hızlı Eşleşme",
+        short_name: "Eşleş",
+        description: "Hemen rakip bul ve oyna",
+        url: "/?action=matchmaking",
+        icons: [{ src: "/xox_icon.png", sizes: "96x96" }]
+      },
+      {
+        name: "Liderlik Tablosu",
+        short_name: "Sıralama",
+        description: "En iyi oyuncuları gör",
+        url: "/?page=leaderboard",
+        icons: [{ src: "/xox_icon.png", sizes: "96x96" }]
       }
     ]
   });
 });
 
-app.get('/xox_icon.jpg', (req, res) => {
-  res.sendFile(path.join(process.cwd(), 'src/assets/images/xox_icon_clean_round_1781433620627.jpg'));
+app.get('/xox_icon.png', (req, res) => {
+  // Try new PNG first, fall back to old JPG
+  const pngPath = path.join(process.cwd(), 'assets/images/xox_icon.png');
+  const jpgPath = path.join(process.cwd(), 'assets/images/xox_icon_clean_round_1781433620627.jpg');
+  const fs = require('fs');
+  if (fs.existsSync(pngPath)) {
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.sendFile(pngPath);
+  } else {
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.sendFile(jpgPath);
+  }
 });
 
 // System Status Endpoint

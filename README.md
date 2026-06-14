@@ -1,20 +1,48 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# XOX Arena 🎮
 
-# Run and deploy your AI Studio app
+**Gerçek zamanlı çevrimiçi XOX (Tic-Tac-Toe) oyunu**
 
-This contains everything you need to run your app locally.
+ELO puanlama sistemi, lobi sohbeti, özel oda desteği ve PWA ile donatılmış tam özellikli multiplayer oyun platformu.
 
-View your app in AI Studio: https://ai.studio/apps/4e25ddf7-0488-47d4-93e0-5746c2ae73b9
+## 🚀 Render.com'da Yayınlama
 
-## Run Locally
+### 1. Ortam Değişkenleri (Environment Variables)
 
-**Prerequisites:**  Node.js
+Render.com dashboard'unda şu değişkenleri ayarlayın:
 
+| Değişken | Açıklama | Zorunlu |
+|---|---|---|
+| `MONGO_URI` | MongoDB Atlas bağlantı dizesi | Hayır (in-memory fallback) |
+| `JWT_SECRET` | JWT imzalama anahtarı | **Evet** |
+| `NODE_ENV` | `production` olarak ayarlayın | **Evet** |
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+### 2. Build & Start Komutları
+
+- **Build Command:** `npm install && npm run build`
+- **Start Command:** `npm start`
+- **Node Version:** 18+
+
+### 3. MongoDB Atlas (Opsiyonel)
+
+MongoDB olmadan da çalışır (in-memory). Kalıcı veri için Atlas'tan ücretsiz cluster alın ve `MONGO_URI`'yi ayarlayın.
+
+## 🛠️ Lokal Geliştirme
+
+```bash
+npm install
+cp .env.example .env
+# .env içinde gerekli değerleri ayarlayın
+npm run dev
+```
+
+## ✨ Özellikler
+
+- 🎯 **Gerçek Zamanlı Multiplayer** - Socket.IO ile anlık oyun
+- 📊 **ELO Sistemi** - Rekabetçi sıralama
+- 🏆 **Liderlik Tablosu** - Top 500 oyuncu
+- 💬 **Lobi & Oda Sohbeti** - Anlık mesajlaşma
+- 🔐 **JWT Kimlik Doğrulama** - Güvenli oturum yönetimi
+- 🎭 **Özel Odalar** - Arkadaşlarla özel maç
+- 📱 **PWA Desteği** - Mobil'e eklenebilir uygulama
+- 🗄️ **MongoDB Atlas** - Kalıcı veri (opsiyonel)
+- ⚡ **In-Memory Fallback** - Veritabanı olmadan da çalışır

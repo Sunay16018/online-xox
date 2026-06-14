@@ -4,16 +4,59 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>XOX Arena - Online Multiplayer</title>
-    <link rel="icon" type="image/jpeg" href="/xox_icon.jpg" />
-    <link rel="apple-touch-icon" href="/xox_icon.jpg" />
+
+    <!-- Favicon & App Icons -->
+    <link rel="icon" type="image/png" href="/xox_icon.png" />
+    <link rel="shortcut icon" type="image/png" href="/xox_icon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/xox_icon.png" />
+    <link rel="apple-touch-icon-precomposed" href="/xox_icon.png" />
+
+    <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
+
+    <!-- Theme & Meta -->
     <meta name="theme-color" content="#4f46e5" />
+    <meta name="description" content="XOX Arena - Gerçek zamanlı çevrimiçi XOX (Tic-Tac-Toe) oyunu. ELO puanlama sistemi, lobi sohbeti ve özel oda desteğiyle oynayın!" />
+    <meta name="keywords" content="xox, tic-tac-toe, online, multiplayer, arena, oyun" />
+    <meta name="author" content="XOX Arena" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="XOX Arena - Online Multiplayer" />
+    <meta property="og:description" content="Gerçek zamanlı online XOX oyunu. Rakip bul, ELO kazan, zirveye çık!" />
+    <meta property="og:image" content="/xox_icon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="tr_TR" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="XOX Arena - Online Multiplayer" />
+    <meta name="twitter:description" content="Gerçek zamanlı online XOX oyunu. ELO sistemiyle rekabetçi oyna!" />
+    <meta name="twitter:image" content="/xox_icon.png" />
+
+    <!-- PWA / Mobile App -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="XOX Arena" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="XOX Arena" />
+
+    <!-- Microsoft Tiles -->
+    <meta name="msapplication-TileImage" content="/xox_icon.png" />
+    <meta name="msapplication-TileColor" content="#4f46e5" />
+    <meta name="msapplication-navbutton-color" content="#4f46e5" />
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .catch(() => { /* SW not critical */ });
+        });
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-
