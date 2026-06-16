@@ -157,9 +157,9 @@ export default function TicTacToeGame({
   const oppSymbol = opponent.symbol;
 
   return (
-    <div className="max-w-6xl mx-auto py-4 px-4 space-y-6">
+    <section id="tic-tac-toe-game" className="max-w-6xl mx-auto py-4 px-4 space-y-6">
       {/* Upper Status Panel */}
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-slate-900 border border-slate-800 text-white rounded-2xl p-4 md:p-6 shadow-md">
+      <div id="game-status-bar" className="flex flex-wrap items-center justify-between gap-4 bg-slate-900 border border-slate-800 text-white rounded-2xl p-4 md:p-6 shadow-md">
         <div className="flex items-center gap-2">
           <span className="bg-indigo-600/20 text-indigo-400 font-bold px-3 py-1 rounded-full text-xs border border-indigo-500/30">
             Oda Kodu: {roomCode}
@@ -172,7 +172,7 @@ export default function TicTacToeGame({
         {/* Dynamic game turn banners */}
         <div className="flex items-center gap-2">
           {status === 'playing' ? (
-            <div className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
+            <div id="turn-indicator" className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
               isMyTurn 
                 ? 'bg-indigo-600 text-white border-indigo-500 animate-pulse'
                 : 'bg-slate-800 text-slate-400 border-slate-700'
@@ -181,11 +181,11 @@ export default function TicTacToeGame({
               {isMyTurn ? 'Senin Sıran' : 'Rakibin Sırası'}
             </div>
           ) : status === 'round_ended' ? (
-            <span className="bg-amber-600/30 text-amber-300 border border-amber-500/40 text-xs font-bold px-4 py-1.5 rounded-xl uppercase tracking-wider">
+            <span id="round-ended-badge" className="bg-amber-600/30 text-amber-300 border border-amber-500/40 text-xs font-bold px-4 py-1.5 rounded-xl uppercase tracking-wider">
               Tur Sonu
             </span>
           ) : (
-            <span className="bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 text-xs font-bold px-4 py-1.5 rounded-xl uppercase tracking-wider">
+            <span id="game-finished-badge" className="bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 text-xs font-bold px-4 py-1.5 rounded-xl uppercase tracking-wider">
               Oyun Tamamlandı
             </span>
           )}
@@ -196,10 +196,10 @@ export default function TicTacToeGame({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
         {/* Playboard side (8 cols) */}
-        <div className="lg:col-span-8 flex flex-col justify-between bg-white border border-slate-100 p-6 md:p-8 rounded-3xl shadow-sm relative overflow-hidden">
+        <div id="game-playboard" className="lg:col-span-8 flex flex-col justify-between bg-white border border-slate-100 p-6 md:p-8 rounded-3xl shadow-sm relative overflow-hidden">
           
           {/* Active Score card section */}
-          <div className="flex items-center justify-around pb-6 border-b border-slate-100 gap-4">
+          <div id="game-scores" className="flex items-center justify-around pb-6 border-b border-slate-100 gap-4">
             
             {/* Me */}
             <div className="flex flex-col items-center text-center space-y-2">
@@ -266,17 +266,16 @@ export default function TicTacToeGame({
           </div>
 
           {/* Core Gameboard */}
-          <div className="flex-1 flex flex-col items-center justify-center py-8">
+          <div id="game-board-container" className="flex-1 flex flex-col items-center justify-center py-8">
             {errorMessage && (
-              <div className="bg-rose-50 text-rose-600 text-xs px-4 py-2 rounded-xl mb-4 border border-rose-100 flex items-center gap-1.5 animate-fadeIn">
+              <div id="game-error" className="bg-rose-50 text-rose-600 text-xs px-4 py-2 rounded-xl mb-4 border border-rose-100 flex items-center gap-1.5 animate-fadeIn">
                 <ShieldAlert className="w-4 h-4 shrink-0" />
                 {errorMessage}
               </div>
             )}
 
             {/* 3x3 Grid layout */}
-            {/* "Kutular (skor butonları) botla yazılacak" -> grid generated using map loop automatically */}
-            <div className="grid grid-cols-3 gap-3 md:gap-4 w-full max-w-[320px] aspect-square relative">
+            <div id="game-grid" className="grid grid-cols-3 gap-3 md:gap-4 w-full max-w-[320px] aspect-square relative">
               {[...Array(9)].map((_, idx) => {
                 const value = gameBoard[idx];
                 const highlight = winningLine?.includes(idx);
@@ -299,7 +298,6 @@ export default function TicTacToeGame({
                           : 'border-slate-100'
                     }`}
                   >
-                    {/* Animate symbol elements with Framer motion */}
                     <AnimatePresence mode="wait">
                       {value !== '' && (
                         <motion.span
@@ -321,7 +319,7 @@ export default function TicTacToeGame({
 
           {/* Interactive Turn-End Overlays (Turlar arası bekleme) */}
           {status === 'round_ended' && (
-            <div className="absolute inset-0 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center animate-fadeIn z-10">
+            <div id="round-end-overlay" className="absolute inset-0 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center animate-fadeIn z-10">
               <h3 className="font-extrabold text-2xl text-slate-800 tracking-tight leading-none mb-2">
                 {winningLine ? 'Tur Tamamlandı!' : 'Tur Berabere!'}
               </h3>
@@ -345,7 +343,7 @@ export default function TicTacToeGame({
 
           {/* Overall Match Finished Screen Overlay */}
           {status === 'finished' && (
-            <div className="absolute inset-0 bg-white/98 z-20 flex flex-col items-center justify-center p-6 text-center overflow-y-auto">
+            <div id="match-finish-overlay" className="absolute inset-0 bg-white/98 z-20 flex flex-col items-center justify-center p-6 text-center overflow-y-auto">
               {matchWinnerId === myUserId ? (
                 <div className="space-y-4 max-w-md">
                   <div className="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-sm">
@@ -374,7 +372,7 @@ export default function TicTacToeGame({
 
               {/* Rating changes */}
               {eloChangesLog.length > 0 && (
-                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 my-6 w-full max-w-sm space-y-2">
+                <div id="elo-changes" className="bg-slate-50 border border-slate-100 rounded-2xl p-4 my-6 w-full max-w-sm space-y-2">
                   <h4 className="font-bold text-xs uppercase tracking-wider text-slate-400 mb-2">Eşleşme ELO Değişimleri</h4>
                   {eloChangesLog.map((log) => {
                     const isWinner = log.change >= 0;
@@ -406,12 +404,12 @@ export default function TicTacToeGame({
         </div>
 
         {/* Private matches chat box (4 cols) */}
-        <div className="lg:col-span-4 h-[420px] lg:h-auto">
+        <div id="game-chat" className="lg:col-span-4 h-[420px] lg:h-auto">
           <LobbyChat socket={socket} roomId={roomCode} currentUsername={me.username} />
         </div>
 
       </div>
-    </div>
+    </section>
   );
 
   function getCurrentRoundWinnerName(): string {
@@ -423,4 +421,4 @@ export default function TicTacToeGame({
     }
     return '';
   }
-}
+            }
