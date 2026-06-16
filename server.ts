@@ -962,6 +962,46 @@ io.on('connection', (socket: Socket) => {
     });
   });
 
+  // Get all currently active/waiting custom rooms for the Rooms page
+  socket.on('get-active-rooms', (callback: Function) => {
+    try {
+      const openRooms: Array<{
+        roomCode: string;
+        hostUsername: string;
+        hostElo: number;
+        hostAvatarUrl: string;
+        rounds: number;
+        isPrivate: boolean;
+        createdAt: string;
+        playerCount: number;
+      }> = [];
+
+      for (const [code, room] of activeRooms.entries()) {
+        // Only expose rooms that are not yet finished and have room for another player
+        if (room.status === 'playing' || room.status === 'round_ended') {
+          const host = room.players[0];
+          openRooms.push({
+            roomCode: code,
+            hostUsername: host.username,
+            hostElo: host.elo,
+            hostAvatarUrl: host.avatarUrl,
+            rounds: room.roundsTotal,
+            isPrivate: room.isPrivate ?? true,
+            createdAt: room.createdAt ? new Date(room.createdAt).toISOString() : new Date().toISOString(),
+            playerCount: room.players.length,
+          });
+        }
+      }
+
+      // Sort: waiting rooms (1 player) first, newest first
+      openRooms.sort((a, b) => a.playerCount - b.playerCount);
+
+      callback(openRooms);
+    } catch (e) {
+      callback([]);
+    }
+  });
+
   // Get chat history
   socket.on('get-chat-history', async (data: { roomId: string }, callback: Function) => {
     try {
