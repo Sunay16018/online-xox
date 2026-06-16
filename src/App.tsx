@@ -20,7 +20,7 @@ let _toastId = 0;
 
 function ToastContainer({ toasts, onRemove }: { toasts: Toast[]; onRemove: (id: number) => void }) {
   return (
-    <div id="toast-container" className="fixed top-4 right-4 z-[999] flex flex-col gap-2 pointer-events-none max-w-sm w-full">
+    <div className="fixed top-4 right-4 z-[999] flex flex-col gap-2 pointer-events-none max-w-sm w-full">
       {toasts.map((t) => {
         const styles: Record<ToastType, string> = {
           success: 'bg-emerald-600 border-emerald-500',
@@ -53,7 +53,7 @@ function ToastContainer({ toasts, onRemove }: { toasts: Toast[]; onRemove: (id: 
 
 // ─── Avatar presets ──────────────────────────────────────────────────────────
 const PRESET_AVATARS = [
-  { name: 'XOX Premium', url: 'https://xox-io.onrender.com/xox_pro.png' },
+  { name: 'XOX Premium', url: '/xox_pro.png' },
   { name: 'Oscar', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Oscar' },
   { name: 'Charlie', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Charlie' },
   { name: 'Buster', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Buster' },
@@ -122,27 +122,18 @@ export default function App() {
   // ─── Effects ──────────────────────────────────────────────────────────────
   useEffect(() => {
     if (token) {
-      fetch('https://xox-io.onrender.com/api/user/profile', { 
-        headers: { Authorization: `Bearer ${token}` } 
-      })
+      fetch('/api/user/profile', { headers: { Authorization: `Bearer ${token}` } })
         .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
         .then(setUser)
         .catch(handleLogout);
     }
-    fetch('https://xox-io.onrender.com/api/status')
-      .then((r) => r.json())
-      .then((d) => { if (d.database) setDbStatus(d.database); })
-      .catch(() => {});
+    fetch('/api/status').then((r) => r.json()).then((d) => { if (d.database) setDbStatus(d.database); }).catch(() => {});
   }, [token]);
 
   useEffect(() => {
     if (!token || !user) { socket?.disconnect(); setSocket(null); return; }
 
-    const s = io('https://xox-io.onrender.com', { 
-      auth: { token }, 
-      reconnectionDelay: 1000, 
-      reconnectionDelayMax: 5000 
-    });
+    const s = io({ auth: { token }, reconnectionDelay: 1000, reconnectionDelayMax: 5000 });
 
     s.on('connect', () => {
       s.emit('get-lobby-status', (stats: LobbyStats) => { if (stats) setLobbyStats(stats); });
@@ -193,13 +184,9 @@ export default function App() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault(); setAuthError(null); setAuthSuccessMsg(null); setAuthLoading(true);
-    const avatarToSave = avatarInput.trim() || PRESET_AVATARS[avatarSeedIndex]?.url || 'https://xox-io.onrender.com/xox_icon.png';
+    const avatarToSave = avatarInput.trim() || PRESET_AVATARS[avatarSeedIndex]?.url || '/xox_icon.png';
     try {
-      const r = await fetch('https://xox-io.onrender.com/api/auth/register', { 
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json' }, 
-        body: JSON.stringify({ username: usernameInput, password: passwordInput, avatarUrl: avatarToSave }) 
-      });
+      const r = await fetch('/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: usernameInput, password: passwordInput, avatarUrl: avatarToSave }) });
       const body = await r.json();
       if (!r.ok) throw new Error(body.error || 'Kayıt başarısız.');
       setAuthSuccessMsg('Hesap oluşturuldu! Giriş yapılıyor...');
@@ -211,11 +198,7 @@ export default function App() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault(); setAuthError(null); setAuthSuccessMsg(null); setAuthLoading(true);
     try {
-      const r = await fetch('https://xox-io.onrender.com/api/auth/login', { 
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json' }, 
-        body: JSON.stringify({ username: usernameInput, password: passwordInput }) 
-      });
+      const r = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: usernameInput, password: passwordInput }) });
       const body = await r.json();
       if (!r.ok) throw new Error(body.error || 'Hatalı kullanıcı adı veya şifre.');
       setAuthSuccessMsg('Giriş başarılı! Yönlendiriliyorsunuz...');
@@ -228,11 +211,7 @@ export default function App() {
 
   const handleUpdateAvatar = async (newUrl: string) => {
     try {
-      const r = await fetch('https://xox-io.onrender.com/api/user/avatar', { 
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, 
-        body: JSON.stringify({ avatarUrl: newUrl }) 
-      });
+      const r = await fetch('/api/user/avatar', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ avatarUrl: newUrl }) });
       const body = await r.json();
       if (!r.ok) return { success: false, error: body.error };
       localStorage.setItem('xox_jwt_token', body.token);
@@ -296,10 +275,10 @@ export default function App() {
     return (
       <div className="min-h-screen bg-slate-50 antialiased font-sans">
         <ToastContainer toasts={toasts} onRemove={removeToast} />
-        <header id="game-header" className="nav-glass sticky top-0 z-50 py-3.5">
+        <header className="nav-glass sticky top-0 z-50 py-3.5">
           <div className="max-w-6xl mx-auto px-4 flex justify-between items-center">
             <div className="flex items-center gap-2">
-              <img src="https://xox-io.onrender.com/xox_icon.png" alt="XOX Arena" className="w-8 h-8 rounded-xl object-cover shadow border border-white/60" referrerPolicy="no-referrer" />
+              <img src="/xox_icon.png" alt="XOX Arena" className="w-8 h-8 rounded-xl object-cover shadow border border-white/60" referrerPolicy="no-referrer" />
               <span className="font-black text-base text-slate-800 tracking-tight">XOX ARENA</span>
             </div>
             <div className="flex items-center gap-2">
@@ -309,7 +288,7 @@ export default function App() {
             </div>
           </div>
         </header>
-        <main id="game-main" className="py-6">
+        <main className="py-6">
           <TicTacToeGame socket={socket} roomCode={activeGame.roomCode} myUserId={user.userId} opponent={activeGame.opponent} me={activeGame.me} roundsLimit={activeGame.roundsLimit} initialGameBoard={activeGame.gameBoard} initialTurnUserId={activeGame.turnUserId} initialStatus={activeGame.status} onExitGame={handleExitActiveGame} />
         </main>
       </div>
@@ -319,16 +298,16 @@ export default function App() {
   // ─── RENDER: Dashboard ─────────────────────────────────────────────────
   if (user) {
     return (
-      <div id="app-dashboard" className="min-h-screen bg-slate-50 antialiased font-sans flex flex-col">
+      <div className="min-h-screen bg-slate-50 antialiased font-sans flex flex-col">
         <ToastContainer toasts={toasts} onRemove={removeToast} />
 
         {/* Navbar */}
-        <header id="main-nav" className="nav-glass sticky top-0 z-50 py-3">
+        <header className="nav-glass sticky top-0 z-50 py-3">
           <div className="max-w-6xl mx-auto px-4 flex items-center justify-between gap-2">
             {/* Logo */}
             <div className="hidden md:flex items-center gap-2.5 cursor-pointer" onClick={() => setActivePageView('lobby')}>
               <div className="relative">
-                <img src="https://xox-io.onrender.com/xox_icon.png" alt="XOX Arena" className="w-9 h-9 rounded-xl object-cover shadow-md border border-white/60" referrerPolicy="no-referrer" />
+                <img src="/xox_icon.png" alt="XOX Arena" className="w-9 h-9 rounded-xl object-cover shadow-md border border-white/60" referrerPolicy="no-referrer" />
                 <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-white nav-dot" />
               </div>
               <div>
@@ -338,7 +317,7 @@ export default function App() {
             </div>
 
             {/* Nav Pills */}
-            <nav id="page-nav" className="flex bg-slate-100 p-1 rounded-2xl border border-slate-200/50 gap-0.5">
+            <nav className="flex bg-slate-100 p-1 rounded-2xl border border-slate-200/50 gap-0.5">
               {([
                 { key: 'lobby', label: 'Lobi', icon: <Zap className="w-3 h-3" /> },
                 { key: 'rooms', label: 'Odalar', icon: <DoorOpen className="w-3 h-3" /> },
@@ -357,7 +336,7 @@ export default function App() {
             </nav>
 
             {/* User */}
-            <div id="user-menu" className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-2 shrink-0">
               <div className="flex items-center gap-2 bg-white border border-slate-100 rounded-xl px-2.5 py-1.5 shadow-sm">
                 <img src={user.avatarUrl} alt={user.username} referrerPolicy="no-referrer"
                   onError={(e) => { (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/bottts/svg?seed=${user.username}`; }}
@@ -376,7 +355,7 @@ export default function App() {
 
         {/* ── LEADERBOARD PAGE ── */}
         {activePageView === 'leaderboard' && (
-          <main id="leaderboard-page" className="max-w-4xl w-full mx-auto px-4 py-8 flex-1 animate-scaleUp">
+          <main className="max-w-4xl w-full mx-auto px-4 py-8 flex-1 animate-scaleUp">
             <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 rounded-3xl p-6 md:p-8 text-white mb-8 border border-slate-800 shadow-xl relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
               <div className="space-y-2 relative z-10">
                 <span className="bg-indigo-500/20 text-indigo-300 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border border-indigo-500/30">Liderlik Kürsüsü</span>
@@ -398,7 +377,7 @@ export default function App() {
 
         {/* ── ROOMS PAGE ── */}
         {activePageView === 'rooms' && (
-          <main id="rooms-page" className="max-w-4xl w-full mx-auto px-4 py-8 flex-1 animate-scaleUp space-y-8">
+          <main className="max-w-4xl w-full mx-auto px-4 py-8 flex-1 animate-scaleUp space-y-8">
             {/* Hero */}
             <div className="bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-700 rounded-3xl p-6 md:p-8 text-white relative overflow-hidden border border-indigo-500/30 shadow-xl">
               <div className="relative z-10 space-y-2">
@@ -427,7 +406,7 @@ export default function App() {
             <ActiveRooms socket={socket} currentUserId={user.userId} onJoinRoom={(code) => handleJoinCustomRoom(code)} />
 
             {/* Create own room CTA */}
-            <div id="create-room-section" className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm glow-card">
+            <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm glow-card">
               <div className="flex items-center gap-3 mb-5">
                 <div className="p-2.5 bg-slate-100 text-slate-700 rounded-2xl"><PlusCircle className="w-5 h-5" /></div>
                 <div>
@@ -442,7 +421,7 @@ export default function App() {
               )}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {/* Create */}
-                <div id="create-room-form" className="bg-slate-50 rounded-2xl p-5 border border-slate-100 space-y-4">
+                <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100 space-y-4">
                   <div><h4 className="font-bold text-xs text-slate-700 uppercase tracking-tight">Oda Oluştur</h4></div>
                   <div className="flex gap-1.5">
                     {[1, 3, 5].map((n) => (
@@ -460,15 +439,9 @@ export default function App() {
                   )}
                 </div>
                 {/* Join */}
-                <div id="join-room-form" className="bg-slate-50 rounded-2xl p-5 border border-slate-100 space-y-4">
+                <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100 space-y-4">
                   <div><h4 className="font-bold text-xs text-slate-700 uppercase tracking-tight">Koda Göre Katıl</h4></div>
-                  <input 
-                    type="text" 
-                    value={codeToJoin} 
-                    onChange={(e) => setCodeToJoin(e.target.value)} 
-                    placeholder="Oda Kodu (ör: ABC12D)" 
-                    className="w-full bg-white border border-slate-200 text-xs px-3.5 py-2.5 rounded-xl uppercase font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-colors" 
-                  />
+                  <input type="text" value={codeToJoin} onChange={(e) => setCodeToJoin(e.target.value)} placeholder="Oda Kodu (ör: ABC12D)" className="w-full bg-white border border-slate-200 text-xs px-3.5 py-2.5 rounded-xl uppercase font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-colors" />
                   <button onClick={() => handleJoinCustomRoom()} disabled={!codeToJoin.trim()} className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white font-bold text-xs py-2.5 rounded-xl transition-all shadow-sm cursor-pointer">Odaya Gir</button>
                 </div>
               </div>
@@ -478,13 +451,13 @@ export default function App() {
 
         {/* ── LOBBY PAGE ── */}
         {activePageView === 'lobby' && (
-          <main id="lobby-page" className="max-w-6xl w-full mx-auto px-4 py-8 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-scaleUp">
+          <main className="max-w-6xl w-full mx-auto px-4 py-8 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-scaleUp">
 
             {/* Left column — actions */}
-            <div id="lobby-left-column" className="lg:col-span-12 xl:col-span-7 space-y-6">
+            <div className="lg:col-span-12 xl:col-span-7 space-y-6">
 
               {/* Stats Bar */}
-              <div id="lobby-stats" className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl p-4 text-white flex items-center justify-around border border-slate-700/60 shadow-md">
+              <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl p-4 text-white flex items-center justify-around border border-slate-700/60 shadow-md">
                 {[
                   { label: 'Çevrimiçi', value: `${lobbyStats.onlineCount}`, color: 'text-emerald-400', suffix: 'oyuncu' },
                   { label: 'Savaşanlar', value: `${lobbyStats.usersPlaying}`, color: 'text-indigo-400', suffix: 'kişi' },
@@ -501,7 +474,7 @@ export default function App() {
               </div>
 
               {/* Matchmaking Card */}
-              <section id="matchmaking-section" className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm glow-card space-y-5 relative overflow-hidden">
+              <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm glow-card space-y-5 relative overflow-hidden">
                 {/* Background decoration */}
                 <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-500/5 rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none" />
                 <div className="flex items-center gap-3">
@@ -515,7 +488,7 @@ export default function App() {
                 </div>
 
                 {matchmakingActive ? (
-                  <div id="matchmaking-active" className="bg-gradient-to-br from-indigo-50 to-violet-50 border border-indigo-100 rounded-2xl p-6 flex flex-col items-center text-center space-y-4 animate-scaleUp">
+                  <div className="bg-gradient-to-br from-indigo-50 to-violet-50 border border-indigo-100 rounded-2xl p-6 flex flex-col items-center text-center space-y-4 animate-scaleUp">
                     <div className="relative">
                       <span className="absolute inset-0 rounded-full bg-indigo-400/20 animate-ping" />
                       <div className="w-16 h-16 bg-white border border-indigo-100 rounded-full flex items-center justify-center shadow">
@@ -530,7 +503,7 @@ export default function App() {
                     <button onClick={handleCancelMatchmaking} className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-5 py-2 rounded-xl transition-all cursor-pointer shadow-sm">Aramayı İptal Et</button>
                   </div>
                 ) : (
-                  <div id="matchmaking-form" className="space-y-4">
+                  <div className="space-y-4">
                     <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest block">Kaç tur oynayalım?</span>
                     <div className="grid grid-cols-5 gap-2">
                       {[1, 2, 3, 4, 5].map((n) => (
@@ -545,10 +518,10 @@ export default function App() {
                     </button>
                   </div>
                 )}
-              </section>
+              </div>
 
               {/* Private Room Card */}
-              <section id="private-room-section" className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm glow-card space-y-5">
+              <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm glow-card space-y-5">
                 <div className="flex items-center gap-3">
                   <div className="p-2.5 bg-slate-100 text-slate-700 rounded-2xl"><PlusCircle className="w-5 h-5" /></div>
                   <div>
@@ -558,7 +531,7 @@ export default function App() {
                 </div>
                 {customRoomError && <div className="bg-rose-50 border border-rose-100 text-rose-600 text-xs p-3 rounded-xl flex items-center gap-2"><AlertCircle className="w-4 h-4 shrink-0" />{customRoomError}</div>}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div id="private-create-form" className="bg-slate-50 rounded-2xl p-4 border border-slate-100 space-y-3">
+                  <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100 space-y-3">
                     <h4 className="font-bold text-xs text-slate-700 uppercase tracking-tight">Oda Oluştur</h4>
                     <div className="flex gap-1.5">
                       {[1, 3, 5].map((n) => (
@@ -574,21 +547,21 @@ export default function App() {
                       <button onClick={handleCreateCustomRoom} className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-2.5 rounded-xl transition-all cursor-pointer">Kod Al</button>
                     )}
                   </div>
-                  <div id="private-join-form" className="bg-slate-50 rounded-2xl p-4 border border-slate-100 space-y-3">
+                  <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100 space-y-3">
                     <h4 className="font-bold text-xs text-slate-700 uppercase tracking-tight">Odaya Katıl</h4>
                     <input type="text" value={codeToJoin} onChange={(e) => setCodeToJoin(e.target.value)} placeholder="Oda Kodu (ABC12D)" className="w-full bg-white border border-slate-200 text-xs px-3 py-2.5 rounded-xl uppercase font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-colors" />
                     <button onClick={() => handleJoinCustomRoom()} disabled={!codeToJoin.trim()} className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white font-bold text-xs py-2.5 rounded-xl transition-all cursor-pointer">Odaya Gir</button>
                   </div>
                 </div>
-              </section>
+              </div>
 
               {/* Profile */}
               <UserProfile user={user} onUpdateAvatar={handleUpdateAvatar} dbInfo={dbStatus} />
             </div>
 
             {/* Right column — chat */}
-            <div id="lobby-right-column" className="lg:col-span-12 xl:col-span-5 space-y-6 h-full">
-              <div id="lobby-chat-container" className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm glow-card flex flex-col h-[580px]">
+            <div className="lg:col-span-12 xl:col-span-5 space-y-6 h-full">
+              <div className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm glow-card flex flex-col h-[580px]">
                 <div className="flex items-center gap-2 pb-3 border-b border-slate-100 mb-1">
                   <MessageSquare className="w-4 h-4 text-indigo-600" />
                   <div>
@@ -604,7 +577,7 @@ export default function App() {
           </main>
         )}
 
-        <footer id="app-footer" className="bg-white border-t border-slate-100 py-5 mt-auto">
+        <footer className="bg-white border-t border-slate-100 py-5 mt-auto">
           <p className="text-center text-slate-400 text-xs font-mono">
             &copy; {new Date().getFullYear()} XOX Online · Tüm Hakları Saklıdır
           </p>
@@ -615,7 +588,7 @@ export default function App() {
 
   // ─── RENDER: Auth Page ─────────────────────────────────────────────────
   return (
-    <div id="auth-page" className="min-h-screen bg-mesh antialiased font-sans flex flex-col items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-mesh antialiased font-sans flex flex-col items-center justify-center p-4 relative overflow-hidden">
       <ToastContainer toasts={toasts} onRemove={removeToast} />
       {/* Floating orbs */}
       <div className="orb-a absolute top-[10%] left-[15%] w-72 h-72 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
@@ -632,14 +605,14 @@ export default function App() {
         ))}
       </div>
 
-      <div id="auth-card" className="w-full max-w-md relative z-10">
+      <div className="w-full max-w-md relative z-10">
         {/* Card */}
         <div className="bg-white/95 backdrop-blur-xl border border-white/60 rounded-3xl p-7 shadow-2xl shadow-black/20 space-y-7 animate-scaleUp">
           {/* Logo area */}
-          <div id="auth-logo" className="text-center space-y-3">
+          <div className="text-center space-y-3">
             <div className="relative inline-block">
               <div className="absolute inset-0 bg-indigo-500/20 rounded-3xl blur-xl" />
-              <img src="https://xox-io.onrender.com/xox_icon.png" alt="XOX Arena" className="relative w-16 h-16 rounded-2xl object-cover shadow-xl border border-white/80 mx-auto" referrerPolicy="no-referrer" />
+              <img src="/xox_icon.png" alt="XOX Arena" className="relative w-16 h-16 rounded-2xl object-cover shadow-xl border border-white/80 mx-auto" referrerPolicy="no-referrer" />
             </div>
             <div>
               <h1 className="font-black text-2xl text-slate-900 tracking-tight">XOX ARENA</h1>
@@ -649,18 +622,18 @@ export default function App() {
 
           {/* Alerts */}
           {authError && (
-            <div id="auth-error" className="bg-rose-50 border border-rose-100 text-rose-600 text-xs px-4 py-3 rounded-xl flex items-center gap-2 animate-fadeIn">
+            <div className="bg-rose-50 border border-rose-100 text-rose-600 text-xs px-4 py-3 rounded-xl flex items-center gap-2 animate-fadeIn">
               <AlertCircle className="w-4 h-4 shrink-0" /><span className="font-medium">{authError}</span>
             </div>
           )}
           {authSuccessMsg && (
-            <div id="auth-success" className="bg-emerald-50 border border-emerald-100 text-emerald-600 text-xs px-4 py-3 rounded-xl flex items-center gap-2 animate-fadeIn">
+            <div className="bg-emerald-50 border border-emerald-100 text-emerald-600 text-xs px-4 py-3 rounded-xl flex items-center gap-2 animate-fadeIn">
               <CheckCircle2 className="w-4 h-4 shrink-0" /><span className="font-medium">{authSuccessMsg}</span>
             </div>
           )}
 
           {/* Tab toggle */}
-          <div id="auth-tabs" className="flex bg-slate-100 p-1 rounded-2xl">
+          <div className="flex bg-slate-100 p-1 rounded-2xl">
             {(['login', 'register'] as const).map((mode) => (
               <button key={mode} onClick={() => { setAuthMode(mode); setAuthError(null); setAuthSuccessMsg(null); }}
                 className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${authMode === mode ? 'bg-white shadow-sm text-indigo-700' : 'text-slate-500 hover:text-slate-700'}`}>
@@ -670,7 +643,7 @@ export default function App() {
           </div>
 
           {/* Form */}
-          <form id="auth-form" onSubmit={authMode === 'login' ? handleLogin : handleRegister} className="space-y-4">
+          <form onSubmit={authMode === 'login' ? handleLogin : handleRegister} className="space-y-4">
             <div className="space-y-1">
               <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Kullanıcı Adı</label>
               <input type="text" required minLength={3} maxLength={15} value={usernameInput} onChange={(e) => setUsernameInput(e.target.value)} placeholder="Örn: xox_ustasi"
@@ -683,7 +656,7 @@ export default function App() {
             </div>
 
             {authMode === 'register' && (
-              <div id="avatar-selection" className="space-y-2.5 animate-fadeIn">
+              <div className="space-y-2.5 animate-fadeIn">
                 <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wide block">Karakter Seç</label>
                 <div className="flex gap-2 overflow-x-auto pb-1 custom-scrollbar">
                   {PRESET_AVATARS.map((av, idx) => (
@@ -714,7 +687,7 @@ export default function App() {
         </div>
 
         {/* SEO blurb below card */}
-        <p id="auth-seo-text" className="text-center text-white/30 text-[10px] mt-6 font-medium">
+        <p className="text-center text-white/30 text-[10px] mt-6 font-medium">
           Ücretsiz · Gerçek Zamanlı · ELO Sıralama · Rekabetçi XOX
         </p>
       </div>
