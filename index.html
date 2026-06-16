@@ -22,120 +22,73 @@
     <meta property="og:url" content="https://xox-io.onrender.com/" />
     <meta property="og:title" content="XOX Arena - Online Multiplayer XOX Oyunu" />
     <meta property="og:description" content="Gerçek zamanlı online XOX oyunu. Rakip bul, ELO kazan, zirveye çık! Ücretsiz oyna." />
-    <meta property="og:image" content="/xox_pro.png" />
+    <meta property="og:image" content="https://xox-io.onrender.com/xox_pro.png" />
     <meta property="og:image:width" content="512" />
     <meta property="og:image:height" content="512" />
     <meta property="og:locale" content="tr_TR" />
-    <meta property="og:site_name" content="XOX IO" />
+    <meta property="og:site_name" content="XOX Arena" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="https://xox-io.onrender.com/" />
     <meta name="twitter:title" content="XOX Arena - Online Multiplayer XOX" />
     <meta name="twitter:description" content="Gerçek zamanlı online XOX oyunu. ELO sistemiyle rekabetçi oyna! Ücretsiz." />
-    <meta name="twitter:image" content="/xox_pro.png" />
+    <meta name="twitter:image" content="https://xox-io.onrender.com/xox_pro.png" />
 
-    <!-- Favicon & App Icons -->
-    <link rel="icon" type="image/png" href="/xox_icon.png" />
-    <link rel="shortcut icon" type="image/png" href="/xox_icon.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/xox_icon.png" />
-    <link rel="apple-touch-icon-precomposed" href="/xox_icon.png" />
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://xox-io.onrender.com/xox_icon.png" />
+    <link rel="apple-touch-icon" href="https://xox-io.onrender.com/xox_pro.png" />
 
-    <!-- PWA -->
-    <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#4f46e5" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="XOX Arena" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="application-name" content="XOX Arena" />
-    <meta name="msapplication-TileImage" content="/xox_icon.png" />
-    <meta name="msapplication-TileColor" content="#4f46e5" />
-    <meta name="msapplication-navbutton-color" content="#4f46e5" />
+    <style>
+      /* Reset & Base */
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: #f8fafc; color: #0f172a; }
 
-    <!-- Structured Data: WebApplication -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "XOX Arena",
-      "alternateName": "XOX Arena Multiplayer",
-      "url": "https://xox-io.onrender.com",
-      "description": "Gerçek zamanlı çevrimiçi XOX (Tic-Tac-Toe) oyunu. ELO puanlama sistemi, lobi sohbeti ve özel oda desteğiyle oynayın.",
-      "applicationCategory": "GameApplication",
-      "genre": "Strateji Oyunu",
-      "operatingSystem": "Web Browser",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "TRY"
-      },
-      "screenshot": "/xox_pro.png",
-      "featureList": [
-        "Gerçek zamanlı çoklu oyuncu",
-        "ELO puanlama sistemi",
-        "Lobi sohbet odası",
-        "Özel oda desteği",
-        "Liderlik tablosu",
-        "PWA desteği"
-      ],
-      "inLanguage": "tr-TR",
-      "isAccessibleForFree": true
-    }
-    </script>
+      /* Custom Scrollbar */
+      .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+      .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+      .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-    <!-- Structured Data: BreadcrumbList -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "Lobi",
-          "item": "https://xox-io.onrender.com/"
-        },
-        {
-          "@type": "ListItem",
-          "position": 2,
-          "name": "Açık Odalar",
-          "item": "https://xox-io.onrender.com/#rooms"
-        },
-        {
-          "@type": "ListItem",
-          "position": 3,
-          "name": "Sıralama",
-          "item": "https://xox-io.onrender.com/#leaderboard"
-        }
-      ]
-    }
-    </script>
+      /* Animations */
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+      @keyframes scaleUp { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+      @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+      @keyframes toastIn { from { opacity: 0; transform: translateX(20px) scale(0.95); } to { opacity: 1; transform: translateX(0) scale(1); } }
 
-    <!-- Preconnect for performance -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://api.dicebear.com" />
+      .animate-fadeIn { animation: fadeIn 0.3s ease-out forwards; }
+      .animate-scaleUp { animation: scaleUp 0.3s ease-out forwards; }
+      .animate-pulse { animation: pulse 2s ease-in-out infinite; }
+      .toast-in { animation: toastIn 0.3s ease-out forwards; }
 
-    <!-- Service Worker -->
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').catch(() => {});
-        });
+      /* Glass Nav */
+      .nav-glass { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(226, 232, 240, 0.7); }
+      .nav-dot { animation: pulse 2s ease-in-out infinite; }
+
+      /* Glow Card */
+      .glow-card { transition: box-shadow 0.25s ease, transform 0.2s ease; }
+      .glow-card:hover { box-shadow: 0 8px 30px rgba(99, 102, 241, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04); }
+
+      /* Button Shine */
+      .btn-shine { position: relative; overflow: hidden; }
+      .btn-shine::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent); transform: rotate(45deg) translateX(-100%); transition: transform 0.6s ease; }
+      .btn-shine:hover::after { transform: rotate(45deg) translateX(100%); }
+
+      /* Background Mesh */
+      .bg-mesh { background: radial-gradient(ellipse at 20% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 60%), radial-gradient(ellipse at 80% 50%, rgba(139, 92, 246, 0.06) 0%, transparent 60%), #f1f5f9; }
+
+      /* Stat Pulse */
+      .stat-pulse .stat-value { display: inline-block; transition: transform 0.2s; }
+      .stat-pulse:hover .stat-value { transform: scale(1.05); }
+
+      /* Responsive tweaks */
+      @media (max-width: 640px) {
+        .toast-container { max-width: 90%; right: 5%; }
       }
-    </script>
+    </style>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-
-    <!-- AdSense-friendly noscript fallback -->
-    <noscript>
-      <div style="text-align:center;padding:40px;font-family:sans-serif;">
-        <h1>XOX Arena - Online Multiplayer XOX</h1>
-        <p>Bu uygulamayı kullanmak için JavaScript etkinleştirilmelidir.</p>
-      </div>
-    </noscript>
   </body>
 </html>
