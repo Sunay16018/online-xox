@@ -39,3 +39,15 @@ export interface LobbyStats {
   searchingCount: number;
   usersPlaying: number;
 }
+
+// NEW: Active room info for the Rooms page
+export interface ActiveRoomInfo {
+  roomCode: string;
+  hostUsername: string;
+  hostElo: number;
+  hostAvatarUrl: string;
+  rounds: number;
+  isPrivate: boolean;
+  createdAt: string;
+  playerCount: number;
+}
