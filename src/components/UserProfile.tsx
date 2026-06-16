@@ -9,7 +9,7 @@ interface UserProfileProps {
 }
 
 const AVATAR_PRESETS = [
-  { name: 'XOX Premium', url: 'https://xox-io.onrender.com/xox_icon.png' },
+  { name: 'XOX Premium', url: '/xox_icon.png' },
   { name: 'Leo', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Leo' },
   { name: 'Mia', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Mia' },
   { name: 'Jack', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Jack' },
@@ -61,7 +61,7 @@ export default function UserProfile({ user, onUpdateAvatar, dbInfo }: UserProfil
   const winRatio = user.totalGames > 0 ? Math.round((user.wins / user.totalGames) * 100) : 0;
 
   return (
-    <section id="user-profile" className="bg-white rounded-2xl border border-slate-100 p-4 sm:p-6 shadow-sm space-y-6">
+    <div className="bg-white rounded-2xl border border-slate-100 p-4 sm:p-6 shadow-sm space-y-6">
       {/* Upper info card */}
       <div className="flex flex-col items-center gap-5 pb-5 border-b border-slate-100">
         <div className="relative group">
@@ -114,7 +114,7 @@ export default function UserProfile({ user, onUpdateAvatar, dbInfo }: UserProfil
 
       {/* Editing Avatar Drawer */}
       {editingAvatar && (
-        <div id="avatar-editor" className="p-4 bg-slate-50 border border-slate-100 rounded-xl space-y-4 animate-fadeIn">
+        <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl space-y-4 animate-fadeIn">
           <div className="flex items-center justify-between">
             <h4 className="font-semibold text-sm sm:text-xs text-slate-700 tracking-tight">Profil Resmini Ayarla</h4>
             <button onClick={() => setEditingAvatar(false)} className="text-sm sm:text-xs text-slate-400 hover:text-slate-600">Vazgeç</button>
@@ -195,7 +195,7 @@ export default function UserProfile({ user, onUpdateAvatar, dbInfo }: UserProfil
       )}
 
       {/* Numerical Metrics Grid - Responsive */}
-      <div id="user-stats" className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="bg-slate-50 border border-slate-100/50 p-4 rounded-xl flex items-center gap-3">
           <div className="p-2 bg-indigo-50 text-indigo-500 rounded-lg">
             <span className="font-bold text-sm">🏟️</span>
@@ -236,6 +236,6 @@ export default function UserProfile({ user, onUpdateAvatar, dbInfo }: UserProfil
           </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 }

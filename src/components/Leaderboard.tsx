@@ -24,7 +24,7 @@ export default function Leaderboard({ currentUserId, refreshTrigger }: Leaderboa
   type MedalUser = LeaderboardUser & { rank: number };
 
   useEffect(() => {
-    fetch('https://xox-io.onrender.com/api/leaderboard')
+    fetch('/api/leaderboard')
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -47,15 +47,15 @@ export default function Leaderboard({ currentUserId, refreshTrigger }: Leaderboa
   );
 
   return (
-    <section id="leaderboard" className="bg-white rounded-3xl border border-slate-100 p-6 md:p-8 shadow-sm flex flex-col">
-      <div id="leaderboard-header" className="flex items-center justify-between mb-4">
+    <div className="bg-white rounded-3xl border border-slate-100 p-6 md:p-8 shadow-sm flex flex-col">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-amber-50 rounded-xl text-amber-500">
             <Trophy className="w-5 h-5" />
           </div>
           <div>
             <h3 className="font-semibold text-slate-800 tracking-tight">Şampiyonlar Ligi</h3>
-            <p className="text-xs text-slate-400">En yüksek ELO'lu oyuncular</p>
+            <p className="text-xs text-slate-400">En yüksek ELO&apos;lu oyuncular</p>
           </div>
         </div>
         <span className="text-xs bg-slate-100 px-2.5 py-1 rounded-full font-semibold text-slate-600">
@@ -64,7 +64,7 @@ export default function Leaderboard({ currentUserId, refreshTrigger }: Leaderboa
       </div>
 
       {/* Search Input */}
-      <div id="leaderboard-search" className="relative mb-4">
+      <div className="relative mb-4">
         <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
         <input
           type="text"
@@ -75,7 +75,7 @@ export default function Leaderboard({ currentUserId, refreshTrigger }: Leaderboa
         />
       </div>
 
-      <div id="leaderboard-list" className="flex-1 overflow-y-auto custom-scrollbar pr-1">
+      <div className="flex-1 overflow-y-auto custom-scrollbar pr-1">
         {loading ? (
           <div className="h-full flex flex-col items-center justify-center py-8">
             <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
@@ -167,6 +167,6 @@ export default function Leaderboard({ currentUserId, refreshTrigger }: Leaderboa
           </div>
         )}
       </div>
-    </section>
+    </div>
   );
 }
