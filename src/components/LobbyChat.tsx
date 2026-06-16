@@ -12,14 +12,16 @@ interface LobbyChatProps {
 const QUICK_EMOJIS = ['👋', '😂', '🔥', '💀', '😤', '🏆', '⚡', '🎯', '💪', '😎', '🤝', '👑', '🎉', '😱', '🥳', '😏'];
 
 const QUICK_MESSAGES = [
-  { label: 'GG', text: 'GG! 🤝' },
-  { label: 'GL HF', text: 'GL HF! ⚡' },
-  { label: 'WP', text: 'Well played! 👏' },
-  { label: 'Rematch!', text: 'Rematch! 😤' },
-  { label: 'GG EZ', text: 'GG EZ 👑' },
-  { label: '🔥🔥🔥', text: '🔥🔥🔥' },
-  { label: 'Nah...', text: 'Nah... 😏' },
-  { label: 'LOL', text: 'LOL 😂' },
+  { label: 'HAKKINI VER', text: 'Hakkını verdin, helal olsun. 🏆' },
+  { label: 'RAKİP', text: 'İyi rakiptin, keyif aldım. 🤝' },
+  { label: 'ŞANSI', text: 'Şans bugün senden yanaydı. 🎯' },
+  { label: 'RÖVANŞ', text: 'Rövanşı isterim, hazır ol. ⚔️' },
+  { label: 'DAHA İYİSİ', text: 'Daha iyisini görmek lazım. 👀' },
+  { label: 'FARK', text: 'Fark atılmış ama olsun. 😌' },
+  { label: 'BİR DAHA', text: 'Bir daha deneyelim mi? 🤔' },
+  { label: 'SENİ BEKLEMİYORDUM', text: 'Seni beklemiyordum, şaşırttın. 🙃' },
+  { label: 'TOPARLAN', text: 'Toparlan da gel, bitmedi. 🧘' },
+  { label: 'SAYGIM VAR', text: 'Oyununa saygım var, cidden. 👏' },
 ];
 
 export default function LobbyChat({ socket, roomId, currentUsername }: LobbyChatProps) {
