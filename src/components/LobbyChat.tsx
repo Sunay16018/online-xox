@@ -61,9 +61,9 @@ export default function LobbyChat({ socket, roomId, currentUsername }: LobbyChat
   const isLobby = roomId === 'lobby';
 
   return (
-    <div className={`flex flex-col rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden h-full ${isLobby ? 'min-h-[480px] max-h-[520px]' : 'h-[360px] md:h-full'}`}>
+    <section id="lobby-chat" className={`flex flex-col rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden h-full ${isLobby ? 'min-h-[480px] max-h-[520px]' : 'h-[360px] md:h-full'}`}>
       {/* Header */}
-      <div className="bg-gradient-to-r from-slate-50 to-indigo-50/30 border-b border-slate-100 px-4 py-3 flex items-center justify-between flex-shrink-0">
+      <div id="chat-header" className="bg-gradient-to-r from-slate-50 to-indigo-50/30 border-b border-slate-100 px-4 py-3 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-2">
           <div className="p-1.5 bg-indigo-100 text-indigo-600 rounded-lg">
             <MessageSquare className="w-3.5 h-3.5" />
@@ -82,7 +82,7 @@ export default function LobbyChat({ socket, roomId, currentUsername }: LobbyChat
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-2.5 custom-scrollbar">
+      <div id="chat-messages" className="flex-1 overflow-y-auto p-3 space-y-2.5 custom-scrollbar">
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center p-6 text-center text-xs text-slate-400">
             <MessageSquare className="w-8 h-8 opacity-20 stroke-[1.5] mb-2" />
@@ -127,7 +127,7 @@ export default function LobbyChat({ socket, roomId, currentUsername }: LobbyChat
 
       {/* Emoji Picker */}
       {showEmojis && (
-        <div className="border-t border-slate-100 bg-white px-3 py-2.5 grid grid-cols-8 gap-1 flex-shrink-0">
+        <div id="emoji-picker" className="border-t border-slate-100 bg-white px-3 py-2.5 grid grid-cols-8 gap-1 flex-shrink-0">
           {QUICK_EMOJIS.map((em) => (
             <button
               key={em}
@@ -141,7 +141,7 @@ export default function LobbyChat({ socket, roomId, currentUsername }: LobbyChat
       )}
 
       {/* Quick Message Buttons — NO free text input */}
-      <div className="p-2.5 bg-slate-50 border-t border-slate-100 flex-shrink-0 space-y-2">
+      <div id="chat-actions" className="p-2.5 bg-slate-50 border-t border-slate-100 flex-shrink-0 space-y-2">
         <div className="flex gap-1.5 overflow-x-auto custom-scrollbar pb-0.5">
           <button
             onClick={() => setShowEmojis((v) => !v)}
@@ -161,6 +161,6 @@ export default function LobbyChat({ socket, roomId, currentUsername }: LobbyChat
           ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 }
