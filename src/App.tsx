@@ -53,9 +53,8 @@ function ToastContainer({ toasts, onRemove }: { toasts: Toast[]; onRemove: (id: 
 }
 
 // ─── Avatar presets ──────────────────────────────────────────────────────────
-// 📍 ASSETS klasöründen çekiyoruz!
 const PRESET_AVATARS = [
-  { name: 'XOX Premium', url: '/assets/images/xox_pro.png' },
+  { name: 'XOX Premium', url: '/xox_pro.png' },
   { name: 'Oscar', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Oscar' },
   { name: 'Charlie', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Charlie' },
   { name: 'Buster', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Buster' },
@@ -70,12 +69,11 @@ type PageView = 'lobby' | 'rooms' | 'leaderboard';
 
 // ─── Offline Difficulty Modal ─────────────────────────────────────────────────
 function OfflineDifficultyModal({ onSelect, onClose }: {
-  onSelect: (difficulty: AIDifficulty, rounds: number, mode: 'ai' | 'twoPlayer') => void;
+  onSelect: (difficulty: AIDifficulty, rounds: number) => void;
   onClose: () => void;
 }) {
   const [selectedDiff, setSelectedDiff] = useState<AIDifficulty>('normal');
   const [selectedRounds, setSelectedRounds] = useState(3);
-  const [selectedMode, setSelectedMode] = useState<'ai' | 'twoPlayer'>('ai');
 
   const diffOptions: { key: AIDifficulty; label: string; desc: string; emoji: string; color: string }[] = [
     { key: 'easy',   label: 'Kolay',  desc: 'AI bazen hata yapar',      emoji: '😊', color: 'border-emerald-400 bg-emerald-50 text-emerald-700' },
@@ -88,61 +86,36 @@ function OfflineDifficultyModal({ onSelect, onClose }: {
       <div className="bg-white rounded-3xl p-7 max-w-sm w-full shadow-2xl space-y-6 animate-scaleUp">
         <div className="text-center space-y-2">
           <div className="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center mx-auto">
-            {selectedMode === 'ai' ? <Bot className="w-6 h-6 text-indigo-600" /> : <Users className="w-6 h-6 text-indigo-600" />}
+            <Bot className="w-6 h-6 text-indigo-600" />
           </div>
-          <h2 className="font-black text-xl text-slate-900">Offline Oyun</h2>
-          <p className="text-slate-400 text-xs">İnternet olmadan oyna!</p>
+          <h2 className="font-black text-xl text-slate-900">AI ile Oyna</h2>
+          <p className="text-slate-400 text-xs">İnternet olmadan yapay zekaya karşı oyna!</p>
         </div>
 
-        {/* Mode Selection */}
+        {/* Difficulty */}
         <div className="space-y-2">
-          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest block">Mod Seç</span>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={() => setSelectedMode('ai')}
-              className={`p-3 rounded-2xl border-2 transition-all cursor-pointer text-center ${
-                selectedMode === 'ai' ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-slate-100 bg-slate-50 text-slate-500'
-              }`}
-            >
-              <Bot className="w-5 h-5 mx-auto mb-1" />
-              <span className="text-xs font-bold">AI ile Oyna</span>
-            </button>
-            <button
-              onClick={() => setSelectedMode('twoPlayer')}
-              className={`p-3 rounded-2xl border-2 transition-all cursor-pointer text-center ${
-                selectedMode === 'twoPlayer' ? 'border-purple-500 bg-purple-50 text-purple-700' : 'border-slate-100 bg-slate-50 text-slate-500'
-              }`}
-            >
-              <Users className="w-5 h-5 mx-auto mb-1" />
-              <span className="text-xs font-bold">2 Kişilik</span>
-            </button>
+          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest block">Zorluk Seç</span>
+          <div className="space-y-2">
+            {diffOptions.map(opt => (
+              <button
+                key={opt.key}
+                onClick={() => setSelectedDiff(opt.key)}
+                className={`w-full flex items-center gap-3 p-3.5 rounded-2xl border-2 transition-all cursor-pointer text-left ${
+                  selectedDiff === opt.key ? opt.color + ' border-current shadow-sm' : 'border-slate-100 bg-slate-50 hover:bg-slate-100'
+                }`}
+              >
+                <span className="text-2xl">{opt.emoji}</span>
+                <div>
+                  <div className="font-bold text-sm">{opt.label}</div>
+                  <div className="text-xs opacity-70">{opt.desc}</div>
+                </div>
+                {selectedDiff === opt.key && (
+                  <CheckCircle2 className="w-5 h-5 ml-auto shrink-0 opacity-70" />
+                )}
+              </button>
+            ))}
           </div>
         </div>
-
-        {/* Difficulty (sadece AI modunda) */}
-        {selectedMode === 'ai' && (
-          <div className="space-y-2">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest block">Zorluk Seç</span>
-            <div className="space-y-2">
-              {diffOptions.map(opt => (
-                <button
-                  key={opt.key}
-                  onClick={() => setSelectedDiff(opt.key)}
-                  className={`w-full flex items-center gap-3 p-3.5 rounded-2xl border-2 transition-all cursor-pointer text-left ${
-                    selectedDiff === opt.key ? opt.color + ' border-current shadow-sm' : 'border-slate-100 bg-slate-50 hover:bg-slate-100'
-                  }`}
-                >
-                  <span className="text-2xl">{opt.emoji}</span>
-                  <div>
-                    <div className="font-bold text-sm">{opt.label}</div>
-                    <div className="text-xs opacity-70">{opt.desc}</div>
-                  </div>
-                  {selectedDiff === opt.key && <CheckCircle2 className="w-5 h-5 ml-auto shrink-0 opacity-70" />}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Rounds */}
         <div className="space-y-2">
@@ -153,7 +126,9 @@ function OfflineDifficultyModal({ onSelect, onClose }: {
                 key={n}
                 onClick={() => setSelectedRounds(n)}
                 className={`flex-1 py-2.5 rounded-xl border text-sm font-extrabold transition-all cursor-pointer ${
-                  selectedRounds === n ? 'bg-slate-900 border-slate-900 text-white shadow-sm' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                  selectedRounds === n
+                    ? 'bg-slate-900 border-slate-900 text-white shadow-sm'
+                    : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
                 }`}
               >
                 {n} Tur
@@ -163,12 +138,14 @@ function OfflineDifficultyModal({ onSelect, onClose }: {
         </div>
 
         <div className="flex gap-3">
-          <button onClick={onClose} className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-2xl transition-all text-sm cursor-pointer">İptal</button>
+          <button onClick={onClose} className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-2xl transition-all text-sm cursor-pointer">
+            İptal
+          </button>
           <button
-            onClick={() => onSelect(selectedDiff, selectedRounds, selectedMode)}
+            onClick={() => onSelect(selectedDiff, selectedRounds)}
             className="flex-1 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold py-3 rounded-2xl shadow-lg shadow-indigo-200 transition-all text-sm cursor-pointer flex items-center justify-center gap-2"
           >
-            {selectedMode === 'ai' ? <Bot className="w-4 h-4" /> : <Users className="w-4 h-4" />} Başla!
+            <Bot className="w-4 h-4" /> Başla!
           </button>
         </div>
       </div>
@@ -223,7 +200,7 @@ export default function App() {
 
   // ─── Offline Mode ─────────────────────────────────────────────────────────
   const [offlineModalOpen, setOfflineModalOpen] = useState(false);
-  const [offlineGame, setOfflineGame] = useState<{ difficulty: AIDifficulty; rounds: number; mode: 'ai' | 'twoPlayer' } | null>(null);
+  const [offlineGame, setOfflineGame] = useState<{ difficulty: AIDifficulty; rounds: number } | null>(null);
 
   const addToast = useCallback((type: ToastType, title: string, message?: string, duration = 4000) => {
     const id = ++_toastId;
@@ -298,8 +275,7 @@ export default function App() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault(); setAuthError(null); setAuthSuccessMsg(null); setAuthLoading(true);
-    // 📍 Assets'ten xox_pro.png kullanılıyor
-    const avatarToSave = avatarInput.trim() || PRESET_AVATARS[avatarSeedIndex]?.url || '/assets/images/xox_icon.png';
+    const avatarToSave = avatarInput.trim() || PRESET_AVATARS[avatarSeedIndex]?.url || '/xox_icon.png';
     try {
       const r = await fetch('/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: usernameInput, password: passwordInput, avatarUrl: avatarToSave }) });
       const body = await r.json();
@@ -392,8 +368,7 @@ export default function App() {
         <header className="nav-glass sticky top-0 z-50 py-3.5">
           <div className="max-w-6xl mx-auto px-4 flex justify-between items-center">
             <div className="flex items-center gap-2">
-              {/* 📍 Assets'ten xox_icon.png */}
-              <img src="/assets/images/xox_icon.png" alt="XOX Arena" className="w-8 h-8 rounded-xl object-cover shadow border border-white/60" referrerPolicy="no-referrer" />
+              <img src="/xox_icon.png" alt="XOX Arena" className="w-8 h-8 rounded-xl object-cover shadow border border-white/60" referrerPolicy="no-referrer" />
               <span className="font-black text-base text-slate-800 tracking-tight">XOX ARENA</span>
             </div>
             <div className="flex items-center gap-2">
@@ -407,7 +382,6 @@ export default function App() {
           <OfflineGame
             difficulty={offlineGame.difficulty}
             rounds={offlineGame.rounds}
-            mode={offlineGame.mode}
             onExit={() => setOfflineGame(null)}
           />
         </main>
@@ -423,8 +397,7 @@ export default function App() {
         <header className="nav-glass sticky top-0 z-50 py-3.5">
           <div className="max-w-6xl mx-auto px-4 flex justify-between items-center">
             <div className="flex items-center gap-2">
-              {/* 📍 Assets'ten xox_icon.png */}
-              <img src="/assets/images/xox_icon.png" alt="XOX Arena" className="w-8 h-8 rounded-xl object-cover shadow border border-white/60" referrerPolicy="no-referrer" />
+              <img src="/xox_icon.png" alt="XOX Arena" className="w-8 h-8 rounded-xl object-cover shadow border border-white/60" referrerPolicy="no-referrer" />
               <span className="font-black text-base text-slate-800 tracking-tight">XOX ARENA</span>
             </div>
             <div className="flex items-center gap-2">
@@ -450,9 +423,9 @@ export default function App() {
         {/* Offline Difficulty Modal */}
         {offlineModalOpen && (
           <OfflineDifficultyModal
-            onSelect={(diff, rounds, mode) => {
+            onSelect={(diff, rounds) => {
               setOfflineModalOpen(false);
-              setOfflineGame({ difficulty: diff, rounds, mode });
+              setOfflineGame({ difficulty: diff, rounds });
             }}
             onClose={() => setOfflineModalOpen(false)}
           />
@@ -464,8 +437,7 @@ export default function App() {
             {/* Logo */}
             <div className="hidden md:flex items-center gap-2.5 cursor-pointer" onClick={() => setActivePageView('lobby')}>
               <div className="relative">
-                {/* 📍 Assets'ten xox_icon.png */}
-                <img src="/assets/images/xox_icon.png" alt="XOX Arena" className="w-9 h-9 rounded-xl object-cover shadow-md border border-white/60" referrerPolicy="no-referrer" />
+                <img src="/xox_icon.png" alt="XOX Arena" className="w-9 h-9 rounded-xl object-cover shadow-md border border-white/60" referrerPolicy="no-referrer" />
                 <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-white nav-dot" />
               </div>
               <div>
@@ -536,6 +508,7 @@ export default function App() {
         {/* ── ROOMS PAGE ── */}
         {activePageView === 'rooms' && (
           <main className="max-w-4xl w-full mx-auto px-4 py-8 flex-1 animate-scaleUp space-y-8">
+            {/* Hero */}
             <div className="bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-700 rounded-3xl p-6 md:p-8 text-white relative overflow-hidden border border-indigo-500/30 shadow-xl">
               <div className="relative z-10 space-y-2">
                 <span className="bg-white/15 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border border-white/20">Canlı Odalar</span>
@@ -544,6 +517,7 @@ export default function App() {
                 </h2>
                 <p className="text-indigo-100 text-xs font-medium">Şu an aktif tüm özel odalar — katıl, hemen oyna!</p>
               </div>
+              {/* Live stat */}
               <div className="relative z-10 mt-4 flex items-center gap-4">
                 <div className="bg-white/10 rounded-2xl px-4 py-2 flex items-center gap-2 border border-white/15">
                   <Users className="w-4 h-4 text-white/80" />
@@ -554,12 +528,14 @@ export default function App() {
                   <span className="font-mono text-sm font-black">{lobbyStats.onlineCount} çevrimiçi</span>
                 </div>
               </div>
+              {/* Decorative */}
               <div className="absolute right-6 top-4 text-8xl opacity-10 select-none font-black">✕</div>
               <div className="absolute right-20 bottom-2 text-5xl opacity-10 select-none font-black">○</div>
             </div>
 
             <ActiveRooms socket={socket} currentUserId={user.userId} onJoinRoom={(code) => handleJoinCustomRoom(code)} />
 
+            {/* Create own room CTA */}
             <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm glow-card">
               <div className="flex items-center gap-3 mb-5">
                 <div className="p-2.5 bg-slate-100 text-slate-700 rounded-2xl"><PlusCircle className="w-5 h-5" /></div>
@@ -574,6 +550,7 @@ export default function App() {
                 </div>
               )}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {/* Create */}
                 <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100 space-y-4">
                   <div><h4 className="font-bold text-xs text-slate-700 uppercase tracking-tight">Oda Oluştur</h4></div>
                   <div className="flex gap-1.5">
@@ -591,6 +568,7 @@ export default function App() {
                     <button onClick={handleCreateCustomRoom} className="btn-shine w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-2.5 rounded-xl transition-all shadow-sm cursor-pointer">Oda Kodu Al</button>
                   )}
                 </div>
+                {/* Join */}
                 <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100 space-y-4">
                   <div><h4 className="font-bold text-xs text-slate-700 uppercase tracking-tight">Koda Göre Katıl</h4></div>
                   <input type="text" value={codeToJoin} onChange={(e) => setCodeToJoin(e.target.value)} placeholder="Oda Kodu (ör: ABC12D)" className="w-full bg-white border border-slate-200 text-xs px-3.5 py-2.5 rounded-xl uppercase font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-colors" />
@@ -605,8 +583,10 @@ export default function App() {
         {activePageView === 'lobby' && (
           <main className="max-w-6xl w-full mx-auto px-4 py-8 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-scaleUp">
 
+            {/* Left column — actions */}
             <div className="lg:col-span-12 xl:col-span-7 space-y-6">
 
+              {/* Stats Bar */}
               <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl p-4 text-white flex items-center justify-around border border-slate-700/60 shadow-md">
                 {[
                   { label: 'Çevrimiçi', value: `${lobbyStats.onlineCount}`, color: 'text-emerald-400', suffix: 'oyuncu' },
@@ -623,7 +603,9 @@ export default function App() {
                 ))}
               </div>
 
+              {/* Matchmaking Card */}
               <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm glow-card space-y-5 relative overflow-hidden">
+                {/* Background decoration */}
                 <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-500/5 rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none" />
                 <div className="flex items-center gap-3">
                   <div className="p-2.5 bg-gradient-to-br from-indigo-500 to-violet-600 text-white rounded-2xl shadow-sm shadow-indigo-200">
@@ -668,6 +650,7 @@ export default function App() {
                 )}
               </div>
 
+              {/* Offline AI Card */}
               <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm glow-card space-y-4 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/5 rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none" />
                 <div className="flex items-center gap-3">
@@ -676,17 +659,18 @@ export default function App() {
                   </div>
                   <div>
                     <h3 className="font-extrabold text-base text-slate-800 tracking-tight">Offline Oyna</h3>
-                    <p className="text-xs text-slate-400">İnternetsiz · AI veya 2 Kişilik</p>
+                    <p className="text-xs text-slate-400">İnternetsiz yapay zekaya karşı oyna · ELO kazanılmaz</p>
                   </div>
                 </div>
                 <button
                   onClick={() => setOfflineModalOpen(true)}
                   className="w-full bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 text-white font-bold py-3.5 rounded-2xl shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <Bot className="w-4 h-4" /> Offline Oyna
+                  <Bot className="w-4 h-4" /> AI ile Oyna
                 </button>
               </div>
 
+              {/* Private Room Card */}
               <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm glow-card space-y-5">
                 <div className="flex items-center gap-3">
                   <div className="p-2.5 bg-slate-100 text-slate-700 rounded-2xl"><PlusCircle className="w-5 h-5" /></div>
@@ -721,9 +705,11 @@ export default function App() {
                 </div>
               </div>
 
+              {/* Profile */}
               <UserProfile user={user} onUpdateAvatar={handleUpdateAvatar} dbInfo={dbStatus} />
             </div>
 
+            {/* Right column — chat */}
             <div className="lg:col-span-12 xl:col-span-5 space-y-6 h-full">
               <div className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm glow-card flex flex-col h-[580px]">
                 <div className="flex items-center gap-2 pb-3 border-b border-slate-100 mb-1">
@@ -754,10 +740,12 @@ export default function App() {
   return (
     <div className="min-h-screen bg-mesh antialiased font-sans flex flex-col items-center justify-center p-4 relative overflow-hidden">
       <ToastContainer toasts={toasts} onRemove={removeToast} />
+      {/* Floating orbs */}
       <div className="orb-a absolute top-[10%] left-[15%] w-72 h-72 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
       <div className="orb-b absolute bottom-[10%] right-[10%] w-96 h-96 bg-violet-600/15 rounded-full blur-3xl pointer-events-none" />
       <div className="orb-c absolute top-[40%] right-[25%] w-48 h-48 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
 
+      {/* Floating XO symbols */}
       <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
         {['✕', '○', '✕', '○', '✕', '○'].map((sym, i) => (
           <span key={i} className="absolute text-white/5 font-black"
@@ -768,12 +756,13 @@ export default function App() {
       </div>
 
       <div className="w-full max-w-md relative z-10">
+        {/* Card */}
         <div className="bg-white/95 backdrop-blur-xl border border-white/60 rounded-3xl p-7 shadow-2xl shadow-black/20 space-y-7 animate-scaleUp">
+          {/* Logo area */}
           <div className="text-center space-y-3">
             <div className="relative inline-block">
               <div className="absolute inset-0 bg-indigo-500/20 rounded-3xl blur-xl" />
-              {/* 📍 Assets'ten xox_icon.png */}
-              <img src="/assets/images/xox_icon.png" alt="XOX Arena" className="relative w-16 h-16 rounded-2xl object-cover shadow-xl border border-white/80 mx-auto" referrerPolicy="no-referrer" />
+              <img src="/xox_icon.png" alt="XOX Arena" className="relative w-16 h-16 rounded-2xl object-cover shadow-xl border border-white/80 mx-auto" referrerPolicy="no-referrer" />
             </div>
             <div>
               <h1 className="font-black text-2xl text-slate-900 tracking-tight">XOX ARENA</h1>
@@ -781,6 +770,7 @@ export default function App() {
             </div>
           </div>
 
+          {/* Alerts */}
           {authError && (
             <div className="bg-rose-50 border border-rose-100 text-rose-600 text-xs px-4 py-3 rounded-xl flex items-center gap-2 animate-fadeIn">
               <AlertCircle className="w-4 h-4 shrink-0" /><span className="font-medium">{authError}</span>
@@ -792,6 +782,7 @@ export default function App() {
             </div>
           )}
 
+          {/* Tab toggle */}
           <div className="flex bg-slate-100 p-1 rounded-2xl">
             {(['login', 'register'] as const).map((mode) => (
               <button key={mode} onClick={() => { setAuthMode(mode); setAuthError(null); setAuthSuccessMsg(null); }}
@@ -801,6 +792,7 @@ export default function App() {
             ))}
           </div>
 
+          {/* Form */}
           <form onSubmit={authMode === 'login' ? handleLogin : handleRegister} className="space-y-4">
             <div className="space-y-1">
               <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Kullanıcı Adı</label>
@@ -844,6 +836,7 @@ export default function App() {
           </form>
         </div>
 
+        {/* SEO blurb below card */}
         <p className="text-center text-white/30 text-[10px] mt-6 font-medium">
           Ücretsiz · Gerçek Zamanlı · ELO Sıralama · Rekabetçi XOX
         </p>
