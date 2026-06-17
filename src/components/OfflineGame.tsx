@@ -1,18 +1,16 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Home, RotateCcw, Bot, Cpu, CheckCircle2, Users } from 'lucide-react';
+import { Home, RotateCcw, Bot, Cpu, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 export type AIDifficulty = 'easy' | 'normal' | 'hard';
-export type GameMode = 'ai' | 'twoPlayer';
 
 interface OfflineGameProps {
   difficulty: AIDifficulty;
   rounds: number;
-  mode: GameMode; // Yeni: 'ai' veya 'twoPlayer'
   onExit: () => void;
 }
 
-// ─── Minimax AI (aynı) ──────────────────────────────────────────────────────
+// ─── Minimax AI ──────────────────────────────────────────────────────────────
 const WINNING_LINES = [
   [0,1,2],[3,4,5],[6,7,8],
   [0,3,6],[1,4,7],[2,5,8],
@@ -86,10 +84,13 @@ function getAIMove(board: string[], difficulty: AIDifficulty): number {
   if (empty.length === 0) return -1;
 
   if (difficulty === 'easy') {
+    // %80 rastgele, %20 iyi hamle
     return Math.random() < 0.8 ? getRandomMove(board) : getBestMove(board);
   } else if (difficulty === 'normal') {
+    // %40 rastgele, %60 iyi hamle
     return Math.random() < 0.4 ? getRandomMove(board) : getBestMove(board);
   } else {
+    // hard: her zaman minimax
     return getBestMove(board);
   }
 }
@@ -102,109 +103,101 @@ const DIFFICULTY_CONFIG = {
 };
 
 // ─── Component ───────────────────────────────────────────────────────────────
-export default function OfflineGame({ difficulty, rounds, mode, onExit }: OfflineGameProps) {
+export default function OfflineGame({ difficulty, rounds, onExit }: OfflineGameProps) {
   const [board, setBoard] = useState<string[]>(Array(9).fill(''));
-  const [isPlayer1Turn, setIsPlayer1Turn] = useState(true); // X oyuncusu (Player 1)
+  const [isPlayerTurn, setIsPlayerTurn] = useState(true);
   const [winningLine, setWinningLine] = useState<number[] | null>(null);
   const [roundStatus, setRoundStatus] = useState<'playing' | 'ended'>('playing');
-  const [roundResult, setRoundResult] = useState<'p1' | 'p2' | 'draw' | null>(null);
-  const [player1Score, setPlayer1Score] = useState(0);
-  const [player2Score, setPlayer2Score] = useState(0);
+  const [roundResult, setRoundResult] = useState<'win' | 'lose' | 'draw' | null>(null);
+  const [playerScore, setPlayerScore] = useState(0);
+  const [aiScore, setAiScore] = useState(0);
   const [currentRound, setCurrentRound] = useState(1);
   const [matchOver, setMatchOver] = useState(false);
-  const [matchWinner, setMatchWinner] = useState<'p1' | 'p2' | 'draw' | null>(null);
+  const [matchWinner, setMatchWinner] = useState<'player' | 'ai' | 'draw' | null>(null);
   const [aiThinking, setAiThinking] = useState(false);
 
   const cfg = DIFFICULTY_CONFIG[difficulty];
-  const isAIMode = mode === 'ai';
-
-  // Player 1 = X (her zaman sol taraf), Player 2 = O (sağ taraf)
-  const p1Name = isAIMode ? 'Sen' : 'Oyuncu 1';
-  const p2Name = isAIMode ? 'AI' : 'Oyuncu 2';
 
   // ─── End round logic ────────────────────────────────────────────────────
-  const endRound = useCallback((result: 'p1' | 'p2' | 'draw', line: number[] | null, newBoard: string[]) => {
+  const endRound = useCallback((result: 'win' | 'lose' | 'draw', line: number[] | null, newBoard: string[]) => {
     setBoard(newBoard);
     setWinningLine(line);
     setRoundStatus('ended');
     setRoundResult(result);
 
-    if (result === 'p1') setPlayer1Score(p => p + 1);
-    if (result === 'p2') setPlayer2Score(p => p + 1);
+    const newPlayerScore = result === 'win' ? playerScore + 1 : playerScore;
+    const newAiScore = result === 'lose' ? aiScore + 1 : aiScore;
 
+    if (result === 'win') setPlayerScore(p => p + 1);
+    if (result === 'lose') setAiScore(p => p + 1);
+
+    // Check match over
     const maxWins = Math.ceil(rounds / 2);
-    const newP1Score = result === 'p1' ? player1Score + 1 : player1Score;
-    const newP2Score = result === 'p2' ? player2Score + 1 : player2Score;
+    if (newPlayerScore + (result === 'win' ? 0 : 0) >= maxWins ||
+        newAiScore + (result === 'lose' ? 0 : 0) >= maxWins ||
+        currentRound >= rounds) {
 
-    if (newP1Score >= maxWins || newP2Score >= maxWins || currentRound >= rounds) {
       setTimeout(() => {
+        const finalP = result === 'win' ? playerScore + 1 : playerScore;
+        const finalA = result === 'lose' ? aiScore + 1 : aiScore;
         setMatchOver(true);
-        if (newP1Score > newP2Score) setMatchWinner('p1');
-        else if (newP2Score > newP1Score) setMatchWinner('p2');
+        if (finalP > finalA) setMatchWinner('player');
+        else if (finalA > finalP) setMatchWinner('ai');
         else setMatchWinner('draw');
       }, 1800);
     }
-  }, [player1Score, player2Score, currentRound, rounds]);
+  }, [playerScore, aiScore, currentRound, rounds]);
 
   // ─── AI Move ─────────────────────────────────────────────────────────────
   useEffect(() => {
-    if (!isAIMode) return;
-    if (isPlayer1Turn || roundStatus !== 'playing' || aiThinking) return;
+    if (!isPlayerTurn && roundStatus === 'playing') {
+      setAiThinking(true);
+      const delay = difficulty === 'hard' ? 700 : difficulty === 'normal' ? 500 : 400;
+      const timer = setTimeout(() => {
+        setBoard(prev => {
+          const newBoard = [...prev];
+          const move = getAIMove(newBoard, difficulty);
+          if (move === -1) return prev;
+          newBoard[move] = 'O';
 
-    setAiThinking(true);
-    const delay = difficulty === 'hard' ? 700 : difficulty === 'normal' ? 500 : 400;
-    const timer = setTimeout(() => {
-      setBoard(prev => {
-        const newBoard = [...prev];
-        const move = getAIMove(newBoard, difficulty);
-        if (move === -1) return prev;
-        newBoard[move] = 'O';
-
-        const { winner, line } = checkWinner(newBoard);
-        if (winner === 'O') {
+          const { winner, line } = checkWinner(newBoard);
+          if (winner === 'O') {
+            setAiThinking(false);
+            endRound('lose', line, newBoard);
+            return newBoard;
+          }
+          if (isDraw(newBoard)) {
+            setAiThinking(false);
+            endRound('draw', null, newBoard);
+            return newBoard;
+          }
           setAiThinking(false);
-          endRound('p2', line, newBoard);
+          setIsPlayerTurn(true);
           return newBoard;
-        }
-        if (isDraw(newBoard)) {
-          setAiThinking(false);
-          endRound('draw', null, newBoard);
-          return newBoard;
-        }
-        setAiThinking(false);
-        setIsPlayer1Turn(true);
-        return newBoard;
-      });
-    }, delay);
-    return () => clearTimeout(timer);
-  }, [isPlayer1Turn, roundStatus, difficulty, endRound, isAIMode, aiThinking]);
+        });
+      }, delay);
+      return () => clearTimeout(timer);
+    }
+  }, [isPlayerTurn, roundStatus, difficulty, endRound]);
 
   // ─── Player Move ─────────────────────────────────────────────────────────
   const handleCellClick = (idx: number) => {
-    if (roundStatus !== 'playing' || aiThinking) return;
-    
-    // İki kişilik modda sıra kimdeyse o oynar
-    // AI modunda sadece Player 1 (X) oynar, Player 2 AI
-    if (isAIMode && !isPlayer1Turn) return;
-    if (board[idx]) return;
+    if (!isPlayerTurn || board[idx] || roundStatus !== 'playing' || aiThinking) return;
 
     const newBoard = [...board];
-    const currentSymbol = isPlayer1Turn ? 'X' : 'O';
-    newBoard[idx] = currentSymbol;
+    newBoard[idx] = 'X';
     setBoard(newBoard);
 
     const { winner, line } = checkWinner(newBoard);
-    if (winner) {
-      endRound(winner === 'X' ? 'p1' : 'p2', line, newBoard);
+    if (winner === 'X') {
+      endRound('win', line, newBoard);
       return;
     }
     if (isDraw(newBoard)) {
       endRound('draw', null, newBoard);
       return;
     }
-
-    // Sırayı değiştir
-    setIsPlayer1Turn(!isPlayer1Turn);
+    setIsPlayerTurn(false);
   };
 
   // ─── Next Round ──────────────────────────────────────────────────────────
@@ -215,26 +208,23 @@ export default function OfflineGame({ difficulty, rounds, mode, onExit }: Offlin
       setRoundStatus('playing');
       setRoundResult(null);
       setCurrentRound(p => p + 1);
-      // Kaybeden başlasın (draw ise rastgele)
-      if (roundResult === 'p1') setIsPlayer1Turn(false);
-      else if (roundResult === 'p2') setIsPlayer1Turn(true);
-      else setIsPlayer1Turn(Math.random() < 0.5);
+      // Loser starts next round
+      setIsPlayerTurn(roundResult !== 'win');
     }
   };
 
+  // ─── Render ───────────────────────────────────────────────────────────────
+  const resultColors = {
+    win:  'from-emerald-500 to-teal-600',
+    lose: 'from-rose-500 to-red-600',
+    draw: 'from-slate-500 to-slate-600',
+  };
   const resultLabels = {
-    p1: `🎉 ${p1Name} Kazandı!`,
-    p2: `😞 ${p2Name} Kazandı!`,
+    win:  '🎉 Turu Kazandın!',
+    lose: '😞 AI Kazandı',
     draw: '🤝 Berabere!',
   };
 
-  const resultColors = {
-    p1: 'from-emerald-500 to-teal-600',
-    p2: 'from-rose-500 to-red-600',
-    draw: 'from-slate-500 to-slate-600',
-  };
-
-  // ─── Render ───────────────────────────────────────────────────────────────
   return (
     <div className="max-w-md mx-auto px-4 py-4 space-y-4">
 
@@ -252,36 +242,30 @@ export default function OfflineGame({ difficulty, rounds, mode, onExit }: Offlin
               className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl space-y-5"
             >
               <div className="text-5xl">
-                {matchWinner === 'p1' ? '🏆' : matchWinner === 'p2' ? '👑' : '🤝'}
+                {matchWinner === 'player' ? '🏆' : matchWinner === 'ai' ? '🤖' : '🤝'}
               </div>
               <div>
                 <h2 className="font-black text-2xl text-slate-900">
-                  {matchWinner === 'p1' ? `${p1Name} Kazandı!` : 
-                   matchWinner === 'p2' ? `${p2Name} Kazandı!` : 
-                   'Berabere!'}
+                  {matchWinner === 'player' ? 'Tebrikler!' : matchWinner === 'ai' ? 'AI Kazandı' : 'Berabere!'}
                 </h2>
                 <p className="text-slate-500 text-sm mt-1">
-                  {isAIMode 
-                    ? (matchWinner === 'p1' ? 'AI\'yı yendin! 🎉' : matchWinner === 'p2' ? 'AI kazandı, tekrar dene!' : 'Güzel maçtı!')
-                    : (matchWinner === 'p1' ? 'Oyuncu 1 şampiyon!' : matchWinner === 'p2' ? 'Oyuncu 2 şampiyon!' : 'Mükemmel denge!')}
+                  {matchWinner === 'player' ? 'AI\'yı yendin!' : matchWinner === 'ai' ? 'Tekrar dene!' : 'Güzel maçtı!'}
                 </p>
               </div>
               <div className="flex justify-center gap-8">
                 <div className="text-center">
-                  <div className="font-mono text-3xl font-black text-indigo-600">{player1Score}</div>
-                  <div className="text-xs text-slate-400 font-bold">{p1Name}</div>
+                  <div className="font-mono text-3xl font-black text-indigo-600">{playerScore}</div>
+                  <div className="text-xs text-slate-400 font-bold">Sen</div>
                 </div>
                 <div className="text-slate-300 font-black text-2xl self-center">:</div>
                 <div className="text-center">
-                  <div className="font-mono text-3xl font-black text-rose-500">{player2Score}</div>
-                  <div className="text-xs text-slate-400 font-bold">{p2Name}</div>
+                  <div className="font-mono text-3xl font-black text-rose-500">{aiScore}</div>
+                  <div className="text-xs text-slate-400 font-bold">AI</div>
                 </div>
               </div>
-              {isAIMode && (
-                <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${cfg.badge}`}>
-                  <span>{cfg.emoji}</span> {cfg.label} Zorluk
-                </div>
-              )}
+              <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${cfg.badge}`}>
+                <span>{cfg.emoji}</span> {cfg.label} Zorluk
+              </div>
               <div className="flex gap-3">
                 <button
                   onClick={onExit}
@@ -295,12 +279,12 @@ export default function OfflineGame({ difficulty, rounds, mode, onExit }: Offlin
                     setWinningLine(null);
                     setRoundStatus('playing');
                     setRoundResult(null);
-                    setPlayer1Score(0);
-                    setPlayer2Score(0);
+                    setPlayerScore(0);
+                    setAiScore(0);
                     setCurrentRound(1);
                     setMatchOver(false);
                     setMatchWinner(null);
-                    setIsPlayer1Turn(true);
+                    setIsPlayerTurn(true);
                   }}
                   className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-2xl transition-all text-sm cursor-pointer flex items-center justify-center gap-2"
                 >
@@ -318,15 +302,9 @@ export default function OfflineGame({ difficulty, rounds, mode, onExit }: Offlin
           <Home className="w-5 h-5" />
         </button>
         <div className="flex items-center gap-2">
-          {isAIMode ? (
-            <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${cfg.badge}`}>
-              <Cpu className="w-3 h-3" /> {cfg.label}
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200">
-              <Users className="w-3 h-3" /> 2 Kişilik
-            </span>
-          )}
+          <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${cfg.badge}`}>
+            <Cpu className="w-3 h-3" /> {cfg.label}
+          </span>
           <span className="text-xs font-bold text-slate-500">Tur {currentRound}/{rounds}</span>
         </div>
       </div>
@@ -336,22 +314,20 @@ export default function OfflineGame({ difficulty, rounds, mode, onExit }: Offlin
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 bg-indigo-100 rounded-full flex items-center justify-center text-lg font-black text-indigo-700">X</div>
           <div>
-            <div className="font-bold text-sm text-slate-800">{p1Name}</div>
-            <div className="text-[10px] text-slate-400">{isAIMode ? 'Sen' : 'Oyuncu 1'}</div>
+            <div className="font-bold text-sm text-slate-800">Sen</div>
+            <div className="text-[10px] text-slate-400">Oyuncu</div>
           </div>
         </div>
         <div className="flex items-center gap-3 font-mono">
-          <span className="text-2xl font-black text-indigo-600">{player1Score}</span>
+          <span className="text-2xl font-black text-indigo-600">{playerScore}</span>
           <span className="text-slate-300 font-black">:</span>
-          <span className="text-2xl font-black text-rose-500">{player2Score}</span>
+          <span className="text-2xl font-black text-rose-500">{aiScore}</span>
         </div>
         <div className="flex items-center gap-3 flex-row-reverse">
           <div className="w-9 h-9 bg-rose-100 rounded-full flex items-center justify-center text-lg font-black text-rose-600">O</div>
           <div className="text-right">
-            <div className="font-bold text-sm text-slate-800">{p2Name}</div>
-            <div className={`text-[10px] font-bold ${isAIMode ? cfg.color : 'text-purple-600'}`}>
-              {isAIMode ? `${cfg.emoji} ${cfg.label}` : 'Oyuncu 2'}
-            </div>
+            <div className="font-bold text-sm text-slate-800">AI</div>
+            <div className={`text-[10px] font-bold ${cfg.color}`}>{cfg.emoji} {cfg.label}</div>
           </div>
         </div>
       </div>
@@ -360,19 +336,17 @@ export default function OfflineGame({ difficulty, rounds, mode, onExit }: Offlin
       <div className={`rounded-xl px-4 py-2.5 border text-center text-xs font-bold transition-all ${
         aiThinking
           ? 'bg-rose-50 border-rose-200 text-rose-600'
-          : roundStatus === 'playing'
-          ? isPlayer1Turn
-            ? 'bg-indigo-50 border-indigo-200 text-indigo-700'
-            : 'bg-purple-50 border-purple-200 text-purple-700'
+          : isPlayerTurn && roundStatus === 'playing'
+          ? 'bg-indigo-50 border-indigo-200 text-indigo-700'
           : 'bg-slate-50 border-slate-200 text-slate-500'
       }`}>
         {roundStatus === 'ended'
           ? (roundResult ? resultLabels[roundResult] : '')
           : aiThinking
           ? '🤖 AI düşünüyor...'
-          : isPlayer1Turn
-          ? `👆 ${p1Name}'in sırası — X koy!`
-          : `✋ ${p2Name}'in sırası — O koy!`}
+          : isPlayerTurn
+          ? '👆 Senin sıran — X koy!'
+          : '⏳ AI hamlesi bekleniyor...'}
       </div>
 
       {/* Board */}
@@ -384,11 +358,11 @@ export default function OfflineGame({ difficulty, rounds, mode, onExit }: Offlin
               <motion.button
                 key={idx}
                 onClick={() => handleCellClick(idx)}
-                whileTap={!cell && roundStatus === 'playing' ? { scale: 0.92 } : {}}
+                whileTap={!cell && isPlayerTurn && roundStatus === 'playing' ? { scale: 0.92 } : {}}
                 className={`
                   aspect-square rounded-2xl border-2 text-3xl font-black flex items-center justify-center transition-all
                   ${isWinCell ? 'border-amber-400 bg-amber-50 scale-105 shadow-lg shadow-amber-200' : 'border-slate-100'}
-                  ${!cell && roundStatus === 'playing' && !aiThinking
+                  ${!cell && isPlayerTurn && roundStatus === 'playing' && !aiThinking
                     ? 'hover:bg-indigo-50 hover:border-indigo-300 cursor-pointer'
                     : 'cursor-default'}
                   ${cell === 'X' ? 'text-indigo-600' : 'text-rose-500'}

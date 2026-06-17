@@ -8,9 +8,8 @@ interface UserProfileProps {
   dbInfo?: { connected: boolean; mode: string; error: string | null; uriSet: boolean };
 }
 
-// ✅ DÜZELTİLDİ: assets/images/ klasöründen çekiyor
 const AVATAR_PRESETS = [
-  { name: 'XOX Premium', url: '/assets/images/xox_icon.png' },
+  { name: 'XOX Premium', url: '/xox_icon.png' },
   { name: 'Leo', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Leo' },
   { name: 'Mia', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Mia' },
   { name: 'Jack', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Jack' },
