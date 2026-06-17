@@ -11,22 +11,7 @@
   "orientation": "portrait-primary",
   "lang": "tr",
   "categories": ["games", "entertainment"],
-  "screenshots": [
-    {
-      "src": "/assets/images/screenshot1.png",
-      "sizes": "1080x1920",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Ana Lobi Ekranı"
-    },
-    {
-      "src": "/assets/images/screenshot2.png",
-      "sizes": "1080x1920",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Oyun Ekranı"
-    }
-  ],
+  "screenshots": [],
   "icons": [
     {
       "src": "/assets/images/xox_icon.png",
@@ -53,26 +38,14 @@
       "short_name": "Eşleş",
       "description": "Hemen rakip bul ve oyna",
       "url": "/?action=matchmaking",
-      "icons": [
-        {
-          "src": "/assets/images/xox_icon.png",
-          "sizes": "96x96"
-        }
-      ]
+      "icons": [{ "src": "/assets/images/xox_icon.png", "sizes": "96x96" }]
     },
     {
       "name": "Liderlik Tablosu",
       "short_name": "Sıralama",
       "description": "En iyi oyuncuları gör",
       "url": "/?page=leaderboard",
-      "icons": [
-        {
-          "src": "/assets/images/xox_icon.png",
-          "sizes": "96x96"
-        }
-      ]
+      "icons": [{ "src": "/assets/images/xox_icon.png", "sizes": "96x96" }]
     }
-  ],
-  "related_applications": [],
-  "prefer_related_applications": false
+  ]
 }
