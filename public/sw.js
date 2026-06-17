@@ -4,8 +4,8 @@ const ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/xox_icon.png',
-  '/xox_pro.png',
+  '/assets/images/xox_icon.png',
+  '/assets/images/xox_pro.png',
 ];
 
 // Install event - cache assets
