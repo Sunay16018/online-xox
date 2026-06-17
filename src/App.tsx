@@ -69,7 +69,7 @@ const PRESET_AVATARS = [
 type PageView = 'lobby' | 'rooms' | 'leaderboard';
 
 // ─── Offline Difficulty Modal ─────────────────────────────────────────────────
-// ─── Offline Two Player Rounds Modal ─────────────────────────────────────────
+// ─── Offline 2 Player Rounds Modal ─────────────────────────────────────────
 function OfflineTwoPlayerModal({ onSelect, onClose }: {
   onSelect: (rounds: number) => void;
   onClose: () => void;
