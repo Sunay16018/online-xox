@@ -1,90 +1,54 @@
-// public/sw.js
 const CACHE_NAME = 'xox-arena-v1';
-const ASSETS = [
+const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/assets/images/xox_icon.png',
-  '/assets/images/xox_pro.png',
+  '/xox_icon.png',
+  '/xox_pro.png',
 ];
 
-// Install event - cache assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('[SW] Cache opened');
-        return cache.addAll(ASSETS);
-      })
-      .then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(STATIC_ASSETS);
+    })
   );
+  self.skipWaiting();
 });
 
-// Activate event - clean old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
+    caches.keys().then((cacheNames) => {
       return Promise.all(
-        keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
+        cacheNames
+          .filter((name) => name !== CACHE_NAME)
+          .map((name) => caches.delete(name))
       );
-    }).then(() => self.clients.claim())
+    })
   );
+  self.clients.claim();
 });
 
-// Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
-  const url = new URL(event.request.url);
-
-  // Skip non-GET requests and API calls
-  if (event.request.method !== 'GET') return;
-  if (url.pathname.startsWith('/api/')) return;
-  if (url.pathname.startsWith('/socket.io/')) return;
-
   event.respondWith(
-    caches.match(event.request)
-      .then((cached) => {
-        if (cached) {
-          // Return cached version, but update in background
-          fetch(event.request)
-            .then((response) => {
-              if (response && response.status === 200) {
-                const cloned = response.clone();
-                caches.open(CACHE_NAME).then((cache) => {
-                  cache.put(event.request, cloned);
-                });
-              }
-            })
-            .catch(() => {});
-          return cached;
-        }
-
-        // Not in cache, fetch from network
-        return fetch(event.request)
-          .then((response) => {
-            if (response && response.status === 200) {
-              const cloned = response.clone();
-              caches.open(CACHE_NAME).then((cache) => {
-                cache.put(event.request, cloned);
-              });
-            }
+    caches.match(event.request).then((cached) => {
+      if (cached) return cached;
+      return fetch(event.request)
+        .then((response) => {
+          if (!response || response.status !== 200 || response.type !== 'basic') {
             return response;
-          })
-          .catch(() => {
-            // Offline fallback - return index.html for navigation
-            if (event.request.headers.get('accept')?.includes('text/html')) {
-              return caches.match('/');
-            }
-            return new Response('Offline', { status: 503 });
+          }
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
           });
-      })
+          return response;
+        })
+        .catch(() => {
+          if (event.request.mode === 'navigate') {
+            return caches.match('/index.html');
+          }
+        });
+    })
   );
-});
-
-// Handle offline page for fetch failures
-self.addEventListener('message', (event) => {
-  if (event.data === 'skipWaiting') {
-    self.skipWaiting();
-  }
 });
